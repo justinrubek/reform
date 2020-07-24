@@ -24,7 +24,7 @@ The `pkg` directory will now contain `bundle.js` and `reform_site_bg.wasm`.
 Place these files into the server's static folder under `static/pkg`, renaming the wasm file to `reform_site.wasm`
 
 To ease this process, the site folder contains shell scripts to build the bundle and copy it to the server directory: 
-`build.sh && ./copy.sh`
+`./build.sh && ./copy.sh`
 
 ### Server
 Cargo can be used normally to build Rocket:
