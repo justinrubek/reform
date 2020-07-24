@@ -1,6 +1,9 @@
 use rocket_contrib::databases::diesel;
 
+pub mod entries;
+pub mod schemas;
 pub mod users;
+pub mod forms;
 
 #[database("diesel_postgres_pool")]
 pub struct Conn(diesel::PgConnection);

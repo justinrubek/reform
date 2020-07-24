@@ -3,13 +3,12 @@ use rocket::config::{Config, Environment, Value};
 use std::collections::HashMap;
 use std::env;
 
-/// Debug only secret for JWT encoding & decoding.
+/// Debug only secret for JWT encoding & decoding
 #[cfg(debug_assertions)]
 const SECRET: &'static str = "8Xui8SN4mI+7egV/9dlfYYLGQJeEx4+DwmSQLwDVXJg=";
 
 /// js toISOString() in test suit can't handle chrono's default precision
 pub const DATE_FORMAT: &'static str = "%Y-%m-%dT%H:%M:%S%.3fZ";
-
 
 pub const TOKEN_PREFIX: &'static str = "Token ";
 
@@ -43,7 +42,6 @@ pub fn from_env() -> Config {
         .unwrap_or_else(|_| "8000".to_string())
         .parse::<u16>()
         .expect("PORT environment variable should parse to an integer");
-
 
     let mut database_config = HashMap::new();
     let mut databases = HashMap::new();

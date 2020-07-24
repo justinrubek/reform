@@ -103,7 +103,7 @@ impl Component for SignupPage {
                        name="password" 
                        oninput=self.link.callback(|e: InputData| Msg::UpdatePassword(e.value))
                        />
-                <button onclick=self.link.callback(|_| Msg::DoSignup) >{"Log in"}</button>
+                <button onclick=self.link.callback(|_| Msg::DoSignup) >{"Sign up"}</button>
             </>
         }
     }

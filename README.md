@@ -1,11 +1,16 @@
 # Reform
 
-A form building web-app
+A form building web-app.
+Forms will be designed and then injected into an existing page or even multiple existing pages. 
+Filling out the form will drop the data into a database using JSON.
 
-Currently there is only ui support for creation and use of user accounts
+Currently there is only ui support for creation and use of user accounts as well as the start of form building
+
+## Dependencies
+* cargo - a nightly version (may be easiest to use [rustup](https://github.com/rust-lang/rustup#installation))
+* postgres
 
 ## Build
-First, ensure you have a nightly version of rust installed (use [rustup](https://github.com/rust-lang/rustup#installation))
 
 ### Frontend
 Install [wasm-pack](https://github.com/rustwasm/wasm-pack)
@@ -17,6 +22,9 @@ Then use [rollup](https://rollupjs.org/guide/en/#installation) to create a singu
 
 The `pkg` directory will now contain `bundle.js` and `reform_site_bg.wasm`. 
 Place these files into the server's static folder under `static/pkg`, renaming the wasm file to `reform_site.wasm`
+
+To ease this process, the site folder contains shell scripts to build the bundle and copy it to the server directory: 
+`build.sh && ./coppy.sh`
 
 ### Server
 Cargo can be used normally to build Rocket:
@@ -30,6 +38,6 @@ When building in debug mode the secret will be a hardcoded string, but be sure t
 
 ### Database
 
-This was designed and only tested using postgres.
 First, create the database (you can use `server/create_db.sql`)
+
 Use diesel_cli (`cargo install diesel_cli`) to run the migrations for the server: `diesel migration run`

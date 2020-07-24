@@ -1,21 +1,19 @@
 [package]
 authors = ["Justin Rubek <rubejus@bvu.edu"]
 name = "reform"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2018"
 license = "Unlicense OR MIT"
 
 repository = "https://github.com/justinrubek/reform"
 
-description = """
-A form builder using Rocket and Yew
-"""
+description = "A form builder using Rocket and Yew"
 
 readme = "README.md"
 
 [dependencies]
 chrono = { version = "0.4.10", features = ["serde"] }
-diesel = { version = "1.4.3", features = ["postgres", "chrono"] }
+diesel = { version = "1.4.3", features = ["postgres", "chrono", "serde_json"] }
 dotenv = "0.15.0"
 jsonwebtoken = "6.0.1"
 rocket = { version = "0.4.2", default-features = false }

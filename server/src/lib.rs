@@ -36,6 +36,13 @@ pub fn build_rocket() -> rocket::Rocket {
                 routes::users::post_users,
                 routes::users::post_login,
                 routes::users::put_user,
+                routes::schemas::get_schema,
+                routes::schemas::get_all_schemas,
+                routes::schemas::post_schema,
+                routes::schemas::get_schema_entries,
+                routes::entries::get_entry,
+                routes::entries::post_entries,
+                routes::entries::put_entry,
             ],
         )
         .attach(db::Conn::fairing())
