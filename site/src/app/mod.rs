@@ -14,6 +14,7 @@ use schema_page::create_schema::CreateSchema;
 
 mod form_page;
 use form_page::FormPage;
+use form_page::view::ViewForms;
 
 pub struct App {
     link: ComponentLink<Self>,
@@ -85,6 +86,7 @@ impl Component for App {
                             <h2>{"View schema"}</h2>
                             <SchemaPage />
                             <CreateSchema />
+                            <ViewForms />
                             <FormPage />
                         </div>
                     </section>

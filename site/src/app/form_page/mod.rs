@@ -9,6 +9,8 @@ use crate::types::{FormInfo, FormCreateInfo};
 mod field;
 use field::{Field, FieldItem};
 
+pub mod view;
+
 mod mapping_page;
 use mapping_page::MappingPage;
 
@@ -75,7 +77,7 @@ impl Component for FormPage {
                 // TODO: Implement name choice
                 let name = "Form";
 
-                let fields = json!(self.state.fields);// serde_json::to_string(&self.state.fields).expect("Failed to serialize field data");
+                let fields = json!(self.state.fields);
 
                 let mappings = json!({});
 
@@ -96,7 +98,6 @@ impl Component for FormPage {
                 })));
 
                 true
-
             }
             _ => false
         }
@@ -105,9 +106,7 @@ impl Component for FormPage {
     fn view(&self) -> Html {
         let fields = self.state.fields.iter().enumerate().map(|(i, field)| {
             html! {
-                <FieldItem field=field onchange=&self.link.callback(move |field| {
-                    Msg::UpdateField(i, field)
-                }) />
+                <FieldItem field=field onchange=&self.link.callback(move |field| Msg::UpdateField(i, field))/>
             }
         }).collect::<Html>();
 

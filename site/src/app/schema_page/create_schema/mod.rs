@@ -99,17 +99,13 @@ impl Component for CreateSchema {
                     "required": required,
                     "properties": properties
                 });
+
                 let schema_info = SchemaCreateInfo {
                     data: schema_data,
                 };
 
-                
-
                 self.task = Some(self.api_handler.create(schema_info, self.link.callback(move |response: Result<SchemaInfo, Error>| {
                     debug!("Response received for CreateSchema");
-                    // let (meta, result) = response.into_parts();
-                    //
-                    //if meta.status.is_success() {
                     if response.is_ok() {
                         Msg::CreateSchemaSuccess(response.unwrap())
                     } else {
