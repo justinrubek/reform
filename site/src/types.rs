@@ -10,24 +10,10 @@ pub struct SchemaInfo {
     pub data: serde_json::Value,
 }
 
-/*
-#[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct SchemaInfoWrapper {
-    pub schema: SchemaInfo,
-}
-*/
-
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct SchemaCreateInfo {
     pub data: serde_json::Value,
 }
-
-/*
-#[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct SchemaCreateInfoWrapper {
-    pub schema: SchemaCreateInfo,
-}
-*/
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct SchemaList {
@@ -60,6 +46,26 @@ pub struct EntryCreateInfoWrapper {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct EntryList {
     pub entries: Vec<EntryInfo>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+pub struct FormInfo {
+    pub id: u32,
+    pub name: String,
+    pub fields: serde_json::Value,
+    pub mappings: serde_json::Value,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct FormCreateInfo {
+    pub name: String,
+    pub fields: serde_json::Value,
+    pub mappings: serde_json::Value,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct FormList {
+    pub forms: Vec<FormInfo>,
 }
 
 pub type DeleteWrapper = HashMap<(), ()>;use crate::error::Error;

@@ -1,10 +1,12 @@
 #![allow(dead_code)]
 
+pub mod forms;
 pub mod schemas;
 pub mod entries;
 
 pub use schemas::Schema;
 pub use entries::Entry;
+pub use forms::Form;
 
 use crate::error::Error;
 use crate::types::*;
@@ -164,8 +166,8 @@ impl Requests {
 }
 
 /// Set limit for pagination
-fn limit(count: u32, p: u32) -> String {
-    let offset = if p > 0 { p * count } else { 0 };
+fn limit(count: u32, page: u32) -> String {
+    let offset = if page > 0 { page * count } else { 0 };
     format!("limit={}&offset={}", count, offset)
 }
 

@@ -4,6 +4,7 @@ use yew::services::fetch::{FetchService, FetchTask, Response, Request};
 
 use crate::auth_agent;
 use crate::error::Error;
+use crate::types::{FormInfo, FormCreateInfo};
 
 mod field;
 use field::{Field, FieldItem};
@@ -15,6 +16,8 @@ pub struct FormPage {
     state: State,
     link: ComponentLink<Self>,
     onback: Option<Callback<()>>,
+    api_handler: auth_agent::Form,
+    task: Option<FetchTask>,
 }
 
 #[derive(Default)]
@@ -25,6 +28,9 @@ struct State {
 pub enum Msg {
     UpdateField(usize, Field),
     AddField,
+    PostForm,
+    CreateFormSuccess(FormInfo),
+    CreateFormFailure,
 }
 
 #[derive(Clone, PartialEq, Properties)]
@@ -42,6 +48,8 @@ impl Component for FormPage {
             state: Default::default(),
             link,
             onback: props.onback,
+            api_handler: auth_agent::Form::new(),
+            task: None,
         }
     }
 
@@ -54,6 +62,41 @@ impl Component for FormPage {
             Msg::AddField => {
                 self.state.fields.push(Default::default()); 
                 true
+            }
+            Msg::CreateFormSuccess(form_info) => {
+                true
+            }
+            Msg::CreateFormFailure => {
+                true
+            }
+            Msg::PostForm => {
+                // TODO: Disable the login button to prevent duplicate reuqests
+
+                // TODO: Implement name choice
+                let name = "Form";
+
+                let fields = json!(self.state.fields);// serde_json::to_string(&self.state.fields).expect("Failed to serialize field data");
+
+                let mappings = json!({});
+
+                let form_info = FormCreateInfo {
+                    name: name.into(),
+                    fields: fields,
+                    mappings: mappings,
+                };
+
+                self.task = Some(self.api_handler.create(form_info, self.link.callback(move |response: Result<FormInfo, Error>| {
+                    debug!("Response received for CreateSchema");
+                    if response.is_ok() {
+                        Msg::CreateFormSuccess(response.unwrap())
+                    } else {
+                        warn!("{:?}", response.err());
+                        Msg::CreateFormFailure
+                    }
+                })));
+
+                true
+
             }
             _ => false
         }
@@ -87,6 +130,7 @@ impl Component for FormPage {
                         {fields}
                     </table>
                     <MappingPage />
+                    <button class="button " onclick=self.link.callback(|_| Msg::PostForm)>{"create form"}</button>
                 </div>
             </>
         }

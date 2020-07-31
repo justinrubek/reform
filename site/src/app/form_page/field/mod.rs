@@ -1,3 +1,5 @@
+use serde::Serialize;
+
 use yew::components::Select;
 use yew::format::Json;
 use yew::prelude::*;
@@ -6,7 +8,7 @@ use yew::services::fetch::{FetchService, FetchTask, Response, Request};
 mod choice_field;
 use choice_field::ChoiceField;
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Serialize)]
 pub enum Type {
     Number,
     Text,
@@ -29,7 +31,7 @@ impl ToString for Type {
     }
 }
 
-#[derive(Clone, Default, PartialEq)]
+#[derive(Clone, Default, PartialEq, Serialize)]
 pub struct Field {
     name: String,
     ftype: Type,
