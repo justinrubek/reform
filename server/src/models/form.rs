@@ -7,5 +7,6 @@ pub struct Form {
     pub id: i32,
     pub name: String,
     pub fields: serde_json::Value,
+    pub mappings: serde_json::Value,
 }
 

@@ -10,6 +10,7 @@ use serde::Deserialize;
 pub struct NewForm<'a> {
     pub name:  &'a str,
     pub fields: &'a serde_json::Value,
+    pub mappings: &'a serde_json::Value,
 }
 
 pub enum FormCreationError {
@@ -29,10 +30,12 @@ pub fn create(
     conn: &PgConnection,
     name: &str,
     fields: &serde_json::Value,
+    mappings: &serde_json::Value,
 ) -> Result<Form, FormCreationError> {
     let new_form = &NewForm {
         name: name,
         fields: fields,
+        mappings: mappings,
     };
 
     diesel::insert_into(forms::table)

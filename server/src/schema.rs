@@ -11,6 +11,7 @@ table! {
         id -> Int4,
         name -> Text,
         fields -> Jsonb,
+        mappings -> Jsonb,
     }
 }
 

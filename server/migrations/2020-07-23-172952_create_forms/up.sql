@@ -1,5 +1,6 @@
 CREATE TABLE forms (
 	id SERIAL NOT NULL PRIMARY KEY,
 	name TEXT NOT NULL,
-	fields JSONB NOT NULL
+	fields JSONB NOT NULL,
+    mappings JSONB NOT NULL
 );

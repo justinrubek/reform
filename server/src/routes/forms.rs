@@ -8,15 +8,11 @@ use rocket_contrib::json::{Json, JsonValue};
 use serde::Deserialize;
 use validator::Validate;
 
-#[derive(Deserialize)]
-pub struct NewForm {
-    form: NewFormData,
-}
-
 #[derive(Deserialize, Validate)]
-struct NewFormData {
+pub struct NewForm {
     name: Option<String>,
     fields: Option<serde_json::Value>,
+    mappings: Option<serde_json::Value>,
 }
 
 #[post("/forms", format = "json", data = "<new_form>")]
@@ -25,15 +21,16 @@ pub fn post_form(
     conn: db::Conn,
     state: State<AppState>,
 ) -> Result<JsonValue, Errors> {
-    let new_form = new_form.into_inner().form;
+    let new_form = new_form.into_inner();
 
     let mut extractor = FieldValidator::validate(&new_form);
     let name = extractor.extract("name", new_form.name);
     let data = extractor.extract("fields", new_form.fields);
+    let mappings = extractor.extract("mappings", new_form.mappings);
 
     extractor.check()?;
 
-    db::forms::create(&conn, &name, &data)
+    db::forms::create(&conn, &name, &data, &mappings)
         .map(|form| json!(form))
         .map_err(|error| {
             Errors::new(&[("json form", "invalid")])
