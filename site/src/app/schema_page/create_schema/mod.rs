@@ -150,7 +150,7 @@ impl Component for CreateSchema {
                         </thead>
                         {fields}
                     </table>
-                <button onclick=self.link.callback(|_| Msg::PostSchema) >{"Create schema"}</button>
+                <button class="button" onclick=self.link.callback(|_| Msg::PostSchema) >{"Create schema"}</button>
                 </div>
             </>
         }

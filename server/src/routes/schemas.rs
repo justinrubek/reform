@@ -8,14 +8,10 @@ use rocket_contrib::json::{Json, JsonValue};
 use serde::Deserialize;
 use validator::Validate;
 
-#[derive(Deserialize)]
-pub struct NewSchema {
-    schema: NewSchemaData,
-}
 
 // TODO: See if we need to validate json schema here
 #[derive(Deserialize, Validate)]
-struct NewSchemaData {
+pub struct NewSchema {
     data: Option<serde_json::Value>,
 }
 
@@ -25,7 +21,7 @@ pub fn post_schema(
     conn: db::Conn,
     state: State<AppState>,
 ) -> Result<JsonValue, Errors> {
-    let new_schema = new_schema.into_inner().schema;
+    let new_schema = new_schema.into_inner();
 
     let mut extractor = FieldValidator::validate(&new_schema);
     let data = extractor.extract("data", new_schema.data);
