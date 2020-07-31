@@ -24,10 +24,10 @@ impl Schema {
     pub fn get(
         &mut self,
         id: u32,
-        callback: Callback<Result<SchemaInfoWrapper, Error>>,
+        callback: Callback<Result<SchemaInfo, Error>>,
     ) -> FetchTask {
         self.requests
-            .get::<SchemaInfoWrapper>(
+            .get::<SchemaInfo>(
                 format!("/{}/{}", API_KEY, id), 
                 callback
             )
@@ -46,11 +46,11 @@ impl Schema {
 
     pub fn create(
         &mut self,
-        schema: SchemaCreateInfoWrapper,
-        callback: Callback<Result<SchemaInfoWrapper, Error>>,
+        schema: SchemaCreateInfo,
+        callback: Callback<Result<SchemaInfo, Error>>,
     ) -> FetchTask {
         self.requests
-            .post::<SchemaCreateInfoWrapper, SchemaInfoWrapper>(
+            .post::<SchemaCreateInfo, SchemaInfo>(
                 format!("/{}", API_KEY),
                 schema,
                 callback,

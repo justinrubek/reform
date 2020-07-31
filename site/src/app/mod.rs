@@ -10,6 +10,7 @@ use login_page::LoginPage;
 
 mod schema_page;
 use schema_page::SchemaPage;
+use schema_page::create_schema::CreateSchema;
 
 mod form_page;
 use form_page::FormPage;
@@ -81,7 +82,9 @@ impl Component for App {
                         <div class="container">
                             <p>{"You're logged in!"}</p>
                             <h1 class="title">{"Schema"}</h1>
+                            <h2>{"View schema"}</h2>
                             <SchemaPage />
+                            <CreateSchema />
                             <FormPage />
                         </div>
                     </section>

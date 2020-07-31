@@ -43,6 +43,10 @@ pub fn build_rocket() -> rocket::Rocket {
                 routes::entries::get_entry,
                 routes::entries::post_entries,
                 routes::entries::put_entry,
+                routes::forms::get_form,
+                routes::forms::post_form,
+                routes::forms::get_all_forms,
+
             ],
         )
         .attach(db::Conn::fairing())

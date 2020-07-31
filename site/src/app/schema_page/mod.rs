@@ -10,6 +10,7 @@ mod schema_item;
 use schema_item::SchemaItem;
 
 pub mod entry_item;
+pub mod create_schema;
 
 /* SchemaPage:
  * Actions to faciliate:

@@ -10,20 +10,24 @@ pub struct SchemaInfo {
     pub data: serde_json::Value,
 }
 
+/*
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct SchemaInfoWrapper {
     pub schema: SchemaInfo,
 }
+*/
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct SchemaCreateInfo {
     pub data: serde_json::Value,
 }
 
+/*
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct SchemaCreateInfoWrapper {
     pub schema: SchemaCreateInfo,
 }
+*/
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct SchemaList {
