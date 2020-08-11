@@ -71,17 +71,10 @@ impl Component for LoginPage {
                 debug!("DoLogin");
                 let url = "/api/login";
 
-                #[derive(Serialize)]
-                struct RequestFormat {
-                    user: LoginData,
-                }
-                let body = RequestFormat {
-                    user: self.state.clone()
-                };
 
                 let request = Request::post(url)
                     .header("Content-Type", "application/json")
-                    .body(Json(&body))
+                    .body(Json(&self.state))
                     .expect("Failed to build request");
 
                 self.task = Some(self.fetch.fetch(request, self.link.callback(move |response: Response<Result<String, failure::Error>>| {

@@ -1,9 +1,9 @@
 [package]
-name = "reform-site"
-version = "0.6.0"
+name = "reform-injector"
+version = "0.1.0"
 authors = [ "Justin Rubek <rubejus@bvu.edu>" ]
 
-description = "A front-end form building site"
+description = "A form builder that is injected into a page"
 edition = "2018"
 license = "Unlicense OR MIT"
 
@@ -15,6 +15,7 @@ readme = "README.md"
 crate-type = ["cdylib"]
 
 [dependencies]
+anyhow = "1.0.13"
 chrono = "0.4.10"
 dotenv_codegen = "0.15.0"
 lazy_static = "1.4.0"

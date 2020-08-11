@@ -44,13 +44,8 @@ pub fn post_users(
         })
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Validate)]
 pub struct LoginUser {
-    user: LoginUserData,
-}
-
-#[derive(Deserialize)]
-struct LoginUserData {
     email: Option<String>,
     password: Option<String>,
 }
@@ -61,7 +56,7 @@ pub fn post_login(
     conn: db::Conn,
     state: State<AppState>,
 ) -> Result<JsonValue, Errors> {
-    let user = user.into_inner().user;
+    let user = user.into_inner();
 
     let mut extractor = FieldValidator::default();
     let email = extractor.extract("email", user.email);

@@ -79,7 +79,7 @@ impl Component for FormPage {
 
                 let fields = json!(self.state.fields);
 
-                let mappings = json!({});
+                let mappings = json!([]);
 
                 let form_info = FormCreateInfo {
                     name: name.into(),

@@ -17,6 +17,7 @@ pub struct NewForm {
 
 #[post("/forms", format = "json", data = "<new_form>")]
 pub fn post_form(
+    auth: Auth,
     new_form: Json<NewForm>,
     conn: db::Conn,
     state: State<AppState>,
@@ -38,7 +39,7 @@ pub fn post_form(
 }
 
 #[get("/forms/<id>")]
-pub fn get_form(id: i32, auth: Auth, conn: db::Conn, state: State<AppState>) -> Option<JsonValue> {
+pub fn get_form(id: i32, conn: db::Conn, state: State<AppState>) -> Option<JsonValue> {
     db::forms::find(&conn, id).map(|form| json!(form))
 }
 
