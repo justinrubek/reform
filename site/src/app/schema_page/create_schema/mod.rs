@@ -79,7 +79,9 @@ impl Component for CreateSchema {
 
                 // Turn this schema into JSON value
                 // required - what fields belong on the document
-                let required = format!("{:?}", self.state.fields.iter().map(|field| field.name.clone()).collect::<Vec<String>>());
+                // let required = format!("{:?}", self.state.fields.iter().map(|field| field.name.clone()).collect::<Vec<String>>());
+                let required_fields = self.state.fields.iter().map(|field| json!(field.name)).collect::<Vec<serde_json::Value>>();
+                let required = serde_json::Value::Array(required_fields);
 
                 fn type_to_string(ty: Type) -> &'static str {
                     match ty {
@@ -89,16 +91,26 @@ impl Component for CreateSchema {
                 }
 
                 // properties - describe the properties of the fields
-                let mut properties = HashMap::new();
+                let mut properties: HashMap<String, serde_json::Value> = HashMap::new();
                 for field in &self.state.fields {
-                    properties.insert(field.name.clone(), format!(r#"{{ "type": "{}" }}"#, type_to_string(field.ftype)));
+                    let mut props: serde_json::Map<String, serde_json::Value> = serde_json::Map::new();
+                    props.insert("type".to_string(), json!(type_to_string(field.ftype).to_string()));
+
+                    properties.insert(field.name.clone(), serde_json::Value::Object(props));
+                    // properties.insert(field.name.clone(), format!(r#"{{ "type": "{}" }}"#, type_to_string(field.ftype)));
                 }
 
+                // Check to see why properties is serialized with quotes around it
+                debug!("{:?} properties", properties);
+                
                 let schema_data = json!({
                     "type": "object",
                     "required": required,
                     "properties": properties
                 });
+
+                // Check to see why properties is serialized with quotes around it
+                debug!("{:?} schema_data", schema_data);
 
                 let schema_info = SchemaCreateInfo {
                     data: schema_data,

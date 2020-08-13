@@ -1,6 +1,6 @@
 [package]
 name = "reform-site"
-version = "0.6.0"
+version = "0.7.0"
 authors = [ "Justin Rubek <rubejus@bvu.edu>" ]
 
 description = "A front-end form building site"

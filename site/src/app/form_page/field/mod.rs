@@ -1,5 +1,7 @@
 use serde::Serialize;
 
+use stdweb::traits::IDragEvent;
+
 use yew::components::Select;
 use yew::format::Json;
 use yew::prelude::*;
@@ -24,9 +26,9 @@ impl Default for Type {
 impl ToString for Type {
     fn to_string(&self) -> String {
         match self {
-            Type::Number => "Number".into(),
-            Type::Text => "Text".into(),
-            Type::Choice => "Choice".into(),
+            Type::Number => "number".into(),
+            Type::Text => "text".into(),
+            Type::Choice => "choice".into(),
         }
     }
 }
@@ -49,6 +51,7 @@ pub enum Msg {
     UpdateType(Type), 
     UpdateLabel(String),
     UpdateData(Vec<String>),
+    StartDrag(DragStartEvent),
 }
 
 #[derive(Clone, PartialEq, Properties)]
@@ -107,6 +110,15 @@ impl Component for FieldItem {
                 self.link.send_message(Msg::OnChange);
                 true
             }
+            Msg::StartDrag(event) => {
+                info!("drag started");
+                // event.data_transfer().expect("Failed to create drag event").set_data("field-name", &self.state.field.label);
+                let data_transfer = event.data_transfer().expect("Failed to create drag event");
+                data_transfer.set_data("field-name", &self.state.field.name);
+                data_transfer.set_data("field-type", &self.state.field.ftype.to_string());
+                data_transfer.set_data("field-label", &self.state.field.label);
+                true
+            }
             _ => false
         }
     }
@@ -134,6 +146,11 @@ impl Component for FieldItem {
             />
         };
 
+        let drag_hook = html! {
+            <div draggable=true ondragstart=self.link.callback(|ev| Msg::StartDrag(ev)) class="drag-hook">
+                {"o"}
+            </div>
+        };
 
         html! {
             <tr>
@@ -154,6 +171,7 @@ impl Component for FieldItem {
                         html!{}
                     }
                 }
+                <td>{drag_hook}</td>
             </tr>
         }
     }

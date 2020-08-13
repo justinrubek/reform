@@ -4,7 +4,7 @@ use yew::services::fetch::{FetchService, FetchTask, Response, Request};
 
 use crate::auth_agent;
 use crate::error::Error;
-use crate::types::{SchemaInfo, SchemaList};
+use crate::types::SchemaInfo;
 
 mod schema_item;
 use schema_item::SchemaItem;
