@@ -14,7 +14,7 @@ use field_selector::FieldSelector;
 
 #[derive(Clone, Default, PartialEq, Serialize)]
 pub struct Mapping {
-    url: String,
+    schema_id: u32,
     field_mappings: HashMap<String, String>,
 }
 
@@ -112,7 +112,7 @@ impl Component for MappingItem {
             }
             Msg::SelectSchema(schema_info) => {
                 // TODO: Create the full url endpoint (for now, use the relative one)
-                self.state.mapping.url = format!("/api/schemas/{}", &schema_info.id);
+                self.state.mapping.schema_id = schema_info.id;
 
                 // Add the fields we can map
                 self.state.mapping.field_mappings = HashMap::new();

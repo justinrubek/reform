@@ -1,19 +1,26 @@
 use failure::Error;
 
-use yew::format::Nothing;
+use std::collections::HashMap;
+
+use yew::format::{Json, Nothing};
 use yew::prelude::*;
 use yew::services::fetch::{FetchService, FetchTask, Request, Response};
 
 mod field;
 use field::{Field, FormField};
 
+#[derive(Clone, PartialEq, Deserialize)]
+struct Mapping {
+    schema_id: i32,
+    field_mappings: HashMap<String, String>,
+}
 
 #[derive(Clone, PartialEq, Deserialize)]
 struct FormInfo {
     id: u32,
     name: String,
     fields: Vec<FormField>,
-    mappings: Vec<serde_json::Value>,
+    mappings: Vec<Mapping>,
 }
 
 pub struct Form {
@@ -21,6 +28,7 @@ pub struct Form {
     state: State,
     task: Option<FetchTask>,
     fetch: FetchService,
+    submit_tasks: Vec<FetchTask>,
 }
 
 struct FieldData {
@@ -75,6 +83,7 @@ impl Component for Form {
             state,
             task: Some(task),
             fetch: fetch,
+            submit_tasks: Vec::new(),
         }
     }
 
@@ -105,12 +114,54 @@ impl Component for Form {
                 true
             }
             Msg::Submit => {
+                #[derive(Clone, PartialEq, Serialize)]
+                struct Entry {
+                    schema_id: i32,
+                    data: serde_json::Value
+                }
+
+                let mut fetch = FetchService::new();
+                let mappings = self.state.form.clone().unwrap().mappings.clone();
+                for mapping in &mappings {
+                    // Retrieve the values to be filled into the schema slots
+                    let mut fields: HashMap<String, String> = HashMap::new();
+                    for (from, to) in &mapping.field_mappings {
+                        // Retrieve the value of 'from' from the form and apply to schema name 'to'
+                        let value = self.state.field_data.iter().find(|data| data.name.eq(from)).unwrap().data.clone();
+                        fields.insert(to.to_string(), value);
+                    }
+
+                    let entry = Entry {
+                        schema_id: mapping.schema_id,
+                        data: json!(fields),
+                    };
+
+                    let body = json!(entry);
+
+                    let request = Request::post("/api/entries")
+                        .header("Content-Type", "application/json")
+                        .body(Json(&body)).expect("Failed to build request for form submission");
+                    let task = fetch.fetch(request, self.link.callback(|response: Response<Result<String, failure::Error>>| {
+                        if response.status().is_success() {
+                            Msg::SubmitSuccess
+                        } else {
+                            Msg::SubmitFailure
+                        }
+                    }));
+
+                    self.submit_tasks.push(task);
+
+                }
                 true
             }
             Msg::SubmitSuccess => {
+                info!("Successfully submit form");
+                self.submit_tasks.clear();
                 true
             }
             Msg::SubmitFailure => {
+                info!("Failed to submit form");
+                self.submit_tasks.clear();
                 true
             }
             _ => true
@@ -129,10 +180,22 @@ impl Component for Form {
             }
             None => html!{}
         };
+
+        let submit = match &self.state.form {
+            Some(form) => {
+                html! {
+                    <button class="button" onclick=self.link.callback(|_| Msg::Submit)>{"Submit"}</button>
+                }
+            }
+            None => html!{}
+        };
+
         html! {
             <div>
-                <p>{"Hello form"}</p>
-                {fields}
+                <div>
+                    {fields}
+                </div>
+                {submit}
             </div>
         }
     }

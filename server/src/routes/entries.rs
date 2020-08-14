@@ -8,15 +8,10 @@ use rocket_contrib::json::{Json, JsonValue};
 use serde::Deserialize;
 use validator::Validate;
 
-#[derive(Deserialize)]
-pub struct NewEntry {
-    entry: NewEntryData,
-}
-
 #[derive(Deserialize, Validate)]
-struct NewEntryData {
-    schema_id: Option<i32>,
-    data: Option<serde_json::Value>,
+pub struct NewEntry {
+    pub schema_id: Option<i32>,
+    pub data: Option<serde_json::Value>,
 }
 
 #[post("/entries", format = "json", data = "<new_entry>")]
@@ -25,13 +20,15 @@ pub fn post_entries(
     conn: db::Conn,
     state: State<AppState>,
 ) -> Result<JsonValue, Errors> {
-    let new_entry = new_entry.into_inner().entry;
+    let new_entry = new_entry.into_inner();
 
     let mut extractor = FieldValidator::validate(&new_entry);
     let schema_id = extractor.extract("schema_id", new_entry.schema_id);
     let data = extractor.extract("data", new_entry.data);
 
     extractor.check()?;
+
+    // TODO: Validate against schema
 
     db::entries::create(&conn, &schema_id, &data)
         .map(|entry| json!(entry))
