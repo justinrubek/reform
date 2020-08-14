@@ -14,7 +14,7 @@ fn check_compatible_types(from: &str, to: &str) -> bool {
         return true;
     }
 
-    if from == "text" && to == "string" {
+    if from == "text" && to == "string" || from == "string" && to == "text" {
         return true;
     }
 

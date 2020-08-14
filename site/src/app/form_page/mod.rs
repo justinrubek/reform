@@ -13,6 +13,7 @@ pub mod view;
 
 mod mapping_page;
 use mapping_page::MappingPage;
+use mapping_page::Mapping;
 
 pub struct FormPage {
     state: State,
@@ -25,6 +26,7 @@ pub struct FormPage {
 #[derive(Default)]
 struct State {
     fields: Vec<Field>,
+    mappings: Vec<Mapping>,
 }
 
 pub enum Msg {
@@ -33,6 +35,7 @@ pub enum Msg {
     PostForm,
     CreateFormSuccess(FormInfo),
     CreateFormFailure,
+    UpdateMappings(Vec<Mapping>),
 }
 
 #[derive(Clone, PartialEq, Properties)]
@@ -79,7 +82,7 @@ impl Component for FormPage {
 
                 let fields = json!(self.state.fields);
 
-                let mappings = json!([]);
+                let mappings = json!(self.state.mappings);
 
                 let form_info = FormCreateInfo {
                     name: name.into(),
@@ -97,6 +100,10 @@ impl Component for FormPage {
                     }
                 })));
 
+                true
+            }
+            Msg::UpdateMappings(mappings) => {
+                self.state.mappings = mappings;
                 true
             }
             _ => false
@@ -128,7 +135,7 @@ impl Component for FormPage {
                         </thead>
                         {fields}
                     </table>
-                    <MappingPage />
+                    <MappingPage onchange=self.link.callback(|mappings| Msg::UpdateMappings(mappings)) />
                     <button class="button " onclick=self.link.callback(|_| Msg::PostForm)>{"create form"}</button>
                 </div>
             </>

@@ -123,7 +123,7 @@ impl Component for MappingItem {
                 true
             }
             Msg::UpdateMapping(to_field, from_field) => {
-                // TODO: Validate types ?
+                self.state.mapping.field_mappings.insert(to_field, from_field);
                 self.link.send_message(Msg::OnChange);
                 true
             }
