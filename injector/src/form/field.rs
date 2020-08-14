@@ -1,6 +1,7 @@
 use failure::Error;
 
 use yew::components::Select;
+use yew::html::onchange::Event;
 use yew::prelude::*;
 
 #[derive(Clone, PartialEq, Deserialize)]
@@ -63,6 +64,7 @@ impl Component for Field {
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::UpdateField(data) => {
+                self.onchange.emit(data);
                 true
             }
             _ => true,
@@ -73,12 +75,30 @@ impl Component for Field {
         let input_field = match self.state.field.ftype {
             Type::Number => {
                 html!{
-                    <input type="number" value=self.state.value />
+                    <input 
+                        type="number" 
+                        onchange=self.link.callback(|event: Event| {
+                            if let ChangeData::Value(val) = event {
+                                Msg::UpdateField(val)
+                            } else {
+                                panic!("Onchange value not a string");
+                            }
+                        })
+                        value=self.state.value />
                 }
             }
             Type::Text => {
                 html!{
-                    <input type="text" value=self.state.value class="input"/>
+                    <input type="text" 
+                        onchange=self.link.callback(|event: Event| {
+                            if let ChangeData::Value(val) = event {
+                                Msg::UpdateField(val)
+                            } else {
+                                panic!("Onchange value not a string");
+                            }
+                        })
+                        value=self.state.value 
+                        class="input"/>
                 }
             }
             Type::Choice => {

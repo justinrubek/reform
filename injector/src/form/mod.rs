@@ -31,9 +31,16 @@ pub struct Form {
     submit_tasks: Vec<FetchTask>,
 }
 
+#[derive(Debug)]
 struct FieldData {
     name: String,
     data: String,
+}
+
+impl ToString for FieldData {
+    fn to_string(&self) -> String {
+        format!("{{name:{},data:{}}}", self.name, self.data)
+    }
 }
 
 struct State {
@@ -127,7 +134,18 @@ impl Component for Form {
                     let mut fields: HashMap<String, String> = HashMap::new();
                     for (from, to) in &mapping.field_mappings {
                         // Retrieve the value of 'from' from the form and apply to schema name 'to'
-                        let value = self.state.field_data.iter().find(|data| data.name.eq(from)).unwrap().data.clone();
+                        let value: String = {
+                            let mut val: String = "null".into();
+                            info!(" field_data{:?}", self.state.field_data);
+                            for data in self.state.field_data.iter() {
+                                if data.name.eq(from) {
+                                    val = data.data.clone();
+                                }
+
+                            }
+                            val
+                        };
+                        // let value = self.state.field_data.iter().find(|data| data.name.eq(from)).unwrap().data.clone();
                         fields.insert(to.to_string(), value);
                     }
 

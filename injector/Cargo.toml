@@ -1,6 +1,6 @@
 [package]
 name = "reform-injector"
-version = "0.2.0"
+version = "0.2.1"
 authors = [ "Justin Rubek <rubejus@bvu.edu>" ]
 
 description = "A form builder that is injected into a page"
