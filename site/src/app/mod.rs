@@ -2,6 +2,12 @@ use yew::prelude::*;
 
 use crate::auth_agent::{is_authenticated, set_token};
 
+mod index_component;
+use index_component::IndexComponent;
+
+mod dashboard_component;
+use dashboard_component::{DashboardComponent, DashboardRoute};
+
 mod signup_page;
 use signup_page::SignupPage;
 
@@ -15,6 +21,18 @@ use schema_page::create_schema::CreateSchema;
 mod form_page;
 use form_page::FormPage;
 use form_page::view::ViewForms;
+
+#[derive(Clone, Debug, Switch)]
+pub enum AppRoute {
+    #[to = "/"]
+    Index,
+    #[to = "/login"]
+    Login,
+    #[to = "/signup"]
+    Signup,
+    #[to = "/dashboard{*:rest}"]
+    Dashboard(DashboardRoute),
+}
 
 pub struct App {
     link: ComponentLink<Self>,
@@ -65,6 +83,21 @@ impl Component for App {
     }
 
     fn view(&self) -> Html {
+        html! {
+            <Router<AppRoute, ()>
+                render = Router::render(|switch: AppRoute| {
+                    match switch {
+                        AppRoute::Index => html!{<IndexComponent />},
+                        AppRoute::Login => html!{<LoginPage onlogin=&self.link.callback(|tok| Msg::LogIn(tok)) />},
+                        AppRoute::Signup => html!{<SignupPage />},
+                        AppRoute::Dashboard(dashboard_route) => html!{<DashboardComponent route=dashboard_route />},
+                    }
+                })
+            />
+        }
+    }
+}
+/*
         match is_authenticated() {
             false => html! {
                 <div>
@@ -92,6 +125,4 @@ impl Component for App {
                     </section>
                 }
             }
-        }
-    }
-}
+*/

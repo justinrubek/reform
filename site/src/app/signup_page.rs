@@ -73,7 +73,7 @@ impl Component for SignupPage {
                     .body(Json(&body))
                     .expect("Failed to build request");
 
-                self.task = Some(self.fetch.fetch(request, self.link.callback(move |response: Response<Result<String, failure::Error>>| {
+                self.task = Some(self.fetch.fetch(request, self.link.callback(move |response: Response<Result<String, anyhow::Error>>| {
                     debug!("Response received from {}", url);
                     let (meta, result) = response.into_parts();
                     if meta.status.is_success() {
@@ -81,7 +81,7 @@ impl Component for SignupPage {
                     } else {
                         Msg::SignupFailure
                     }
-                })));
+                })).expect("Failed to get fetch task"));
 
 
                 true

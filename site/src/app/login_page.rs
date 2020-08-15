@@ -1,3 +1,5 @@
+use anyhow::Error;
+
 use yew::format::Json;
 use yew::prelude::*;
 use yew::services::fetch::{FetchService, FetchTask, Response, Request};
@@ -26,7 +28,6 @@ pub enum Msg {
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    #[props(required)]
     pub onlogin: Callback<String>,
 }
 
@@ -77,7 +78,7 @@ impl Component for LoginPage {
                     .body(Json(&self.state))
                     .expect("Failed to build request");
 
-                self.task = Some(self.fetch.fetch(request, self.link.callback(move |response: Response<Result<String, failure::Error>>| {
+                self.task = Some(self.fetch.fetch(request, self.link.callback(move |response: Response<Result<String, anyhow::Error>>| {
                     debug!("Response received from {}", url);
                     let (meta, result) = response.into_parts();
                     if meta.status.is_success() {
@@ -85,7 +86,7 @@ impl Component for LoginPage {
                     } else {
                         Msg::LoginFailure
                     }
-                })));
+                })).expect("Failed to get fetch task"));
 
 
                 true

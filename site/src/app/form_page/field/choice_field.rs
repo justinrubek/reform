@@ -15,7 +15,6 @@ pub enum Msg {
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    #[props(required)]
     pub onchange: Callback<Vec<String>>,
 }
 

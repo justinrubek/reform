@@ -41,11 +41,8 @@ pub enum Msg {
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    #[props(required)]
     pub onchange: Callback<(String, String)>,
-    #[props(required)]
     pub name: String,
-    #[props(required)]
     pub ftype: String,
 }
 

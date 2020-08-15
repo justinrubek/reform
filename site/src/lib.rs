@@ -1,5 +1,7 @@
 #![recursion_limit="256"]
 
+extern crate anyhow;
+
 extern crate chrono;
 
 #[macro_use]
@@ -19,6 +21,12 @@ extern crate serde;
 
 #[macro_use]
 extern crate serde_json;
+
+#[macro_use]
+extern crate yew;
+
+#[macro_use]
+extern crate yew_router;
 
 #[macro_use]
 extern crate stdweb;
