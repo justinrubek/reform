@@ -4,7 +4,6 @@ use yew::services::fetch::{FetchService, FetchTask, Response, Request};
 
 pub struct SignupPage {
     state: SignupData,
-    fetch: FetchService,
     link: ComponentLink<Self>,
     task: Option<FetchTask>,
 }
@@ -30,7 +29,6 @@ impl Component for SignupPage {
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         SignupPage { 
             state: Default::default(),
-            fetch: FetchService::new(),
             link,
             task: None,
         }
@@ -73,7 +71,7 @@ impl Component for SignupPage {
                     .body(Json(&body))
                     .expect("Failed to build request");
 
-                self.task = Some(self.fetch.fetch(request, self.link.callback(move |response: Response<Result<String, anyhow::Error>>| {
+                self.task = Some(FetchService::fetch(request, self.link.callback(move |response: Response<Result<String, anyhow::Error>>| {
                     debug!("Response received from {}", url);
                     let (meta, result) = response.into_parts();
                     if meta.status.is_success() {
@@ -88,6 +86,10 @@ impl Component for SignupPage {
             }
             _ => false
         }
+    }
+
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        false
     }
 
     fn view(&self) -> Html {

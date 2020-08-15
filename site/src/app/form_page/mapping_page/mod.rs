@@ -11,7 +11,7 @@ pub use mapping::{Mapping, MappingItem};
 pub struct MappingPage {
     state: State,
     link: ComponentLink<Self>,
-    onchange: Callback<Vec<Mapping>>,
+    props: Props,
 }
 
 #[derive(Default)]
@@ -39,14 +39,23 @@ impl Component for MappingPage {
         MappingPage { 
             state: Default::default(),
             link,
-            onchange: props.onchange,
+            props,
+        }
+    }
+
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        if self.props != props {
+            self.props = props;
+            true
+        } else {
+            false
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::OnChange => {
-                self.onchange.emit(self.state.mappings.clone());
+                self.props.onchange.emit(self.state.mappings.clone());
                 true
             }
             Msg::UpdateMapping(i, mapping) => {

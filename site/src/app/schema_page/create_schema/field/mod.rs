@@ -1,7 +1,8 @@
-use yew::components::Select;
 use yew::format::Json;
 use yew::prelude::*;
 use yew::services::fetch::{FetchService, FetchTask, Response, Request};
+
+use crate::components::Select;
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum Type {
@@ -49,7 +50,7 @@ pub struct Props {
 pub struct FieldItem {
     state: State,
     link: ComponentLink<Self>,
-    onchange: Callback<Field>,
+    props: Props,
 }
 
 impl Component for FieldItem {
@@ -58,20 +59,20 @@ impl Component for FieldItem {
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         let state = State {
-            field: props.field,
+            field: props.field.clone(),
         };
 
         FieldItem { 
             state: state,
             link,
-            onchange: props.onchange,
+            props,
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::OnChange => {
-                self.onchange.emit(self.state.field.clone());
+                self.props.onchange.emit(self.state.field.clone());
                 true
             }
             Msg::UpdateName(name) => {
@@ -85,6 +86,16 @@ impl Component for FieldItem {
                 true
             }
             _ => false
+        }
+    }
+
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        if self.props != props {
+            self.state.field = props.field.clone();
+            self.props = props;
+            true 
+        } else {
+            false
         }
     }
 

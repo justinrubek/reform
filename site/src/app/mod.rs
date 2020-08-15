@@ -1,4 +1,7 @@
 use yew::prelude::*;
+use yew_router::prelude::*;
+
+use yew_router::router::Router;
 
 use crate::auth_agent::{is_authenticated, set_token};
 
@@ -82,13 +85,17 @@ impl Component for App {
         }
     }
 
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        false
+    }
+
     fn view(&self) -> Html {
         html! {
             <Router<AppRoute, ()>
                 render = Router::render(|switch: AppRoute| {
                     match switch {
                         AppRoute::Index => html!{<IndexComponent />},
-                        AppRoute::Login => html!{<LoginPage onlogin=&self.link.callback(|tok| Msg::LogIn(tok)) />},
+                        AppRoute::Login => html!{<LoginPage />},
                         AppRoute::Signup => html!{<SignupPage />},
                         AppRoute::Dashboard(dashboard_route) => html!{<DashboardComponent route=dashboard_route />},
                     }

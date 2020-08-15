@@ -18,7 +18,6 @@ use mapping_page::Mapping;
 pub struct FormPage {
     state: State,
     link: ComponentLink<Self>,
-    onback: Option<Callback<()>>,
     api_handler: auth_agent::Form,
     task: Option<FetchTask>,
 }
@@ -38,21 +37,14 @@ pub enum Msg {
     UpdateMappings(Vec<Mapping>),
 }
 
-#[derive(Clone, PartialEq, Properties)]
-pub struct Props {
-    pub onback: Option<Callback<()>>,
-}
-
-
 impl Component for FormPage {
     type Message = Msg;
-    type Properties = Props;
+    type Properties = ();
 
-    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+    fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         FormPage { 
             state: Default::default(),
             link,
-            onback: props.onback,
             api_handler: auth_agent::Form::new(),
             task: None,
         }
@@ -108,6 +100,10 @@ impl Component for FormPage {
             }
             _ => false
         }
+    }
+
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        false
     }
 
     fn view(&self) -> Html {

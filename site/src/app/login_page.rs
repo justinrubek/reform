@@ -6,8 +6,6 @@ use yew::services::fetch::{FetchService, FetchTask, Response, Request};
 
 pub struct LoginPage {
     state: LoginData,
-    fetch: FetchService,
-    onlogin: Callback<String>,
     link: ComponentLink<Self>,
     task: Option<FetchTask>,
 }
@@ -26,20 +24,13 @@ pub enum Msg {
     DoLogin,
 }
 
-#[derive(Clone, PartialEq, Properties)]
-pub struct Props {
-    pub onlogin: Callback<String>,
-}
-
 impl Component for LoginPage {
     type Message = Msg;
-    type Properties = Props;
+    type Properties = ();
 
-    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+    fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         LoginPage { 
             state: Default::default(),
-            fetch: FetchService::new(),
-            onlogin: props.onlogin,
             link,
             task: None,
         }
@@ -58,7 +49,7 @@ impl Component for LoginPage {
             Msg::LoginSuccess(token) => {
                 info!("Login success");
                 self.task = None;
-                self.onlogin.emit(token); 
+                // TODO: Store login token and navigate to dashboard
                 false
             }
             Msg::LoginFailure => {
@@ -78,7 +69,7 @@ impl Component for LoginPage {
                     .body(Json(&self.state))
                     .expect("Failed to build request");
 
-                self.task = Some(self.fetch.fetch(request, self.link.callback(move |response: Response<Result<String, anyhow::Error>>| {
+                self.task = Some(FetchService::fetch(request, self.link.callback(move |response: Response<Result<String, anyhow::Error>>| {
                     debug!("Response received from {}", url);
                     let (meta, result) = response.into_parts();
                     if meta.status.is_success() {
@@ -94,6 +85,11 @@ impl Component for LoginPage {
             _ => false
         }
     }
+
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        false
+    }
+
 
     fn view(&self) -> Html {
         html! {

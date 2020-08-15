@@ -16,7 +16,6 @@ use field::{Field, FieldItem, Type};
 pub struct CreateSchema {
     state: State,
     link: ComponentLink<Self>,
-    onback: Option<Callback<()>>,
     api_handler: Schema,
     task: Option<FetchTask>,
 }
@@ -34,21 +33,14 @@ pub enum Msg {
     CreateSchemaFailure,
 }
 
-#[derive(Clone, PartialEq, Properties)]
-pub struct Props {
-    pub onback: Option<Callback<()>>,
-}
-
-
 impl Component for CreateSchema {
     type Message = Msg;
-    type Properties = Props;
+    type Properties = ();
 
-    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+    fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         CreateSchema { 
             state: Default::default(),
             link,
-            onback: props.onback,
             api_handler: auth_agent::Schema::new(),
             task: None,
         }
@@ -130,6 +122,10 @@ impl Component for CreateSchema {
             }
             _ => false
         }
+    }
+
+    fn change(&mut self, _: Self::Properties) -> ShouldRender {
+        false
     }
 
     fn view(&self) -> Html {

@@ -2,11 +2,11 @@ use std::collections::HashMap;
 
 use stdweb::traits::{IEvent, IDragEvent};
 
-use yew::components::Select;
 use yew::format::Json;
 use yew::prelude::*;
 use yew::services::fetch::{FetchService, FetchTask, Response, Request};
 
+use crate::components::Select;
 // Allow for text->string and choice->string
 fn check_compatible_types(from: &str, to: &str) -> bool {
     // If they're the same, then they're compatible
@@ -49,7 +49,7 @@ pub struct Props {
 pub struct FieldSelector {
     state: State,
     link: ComponentLink<Self>,
-    onchange: Callback<(String, String)>,
+    props: Props,
 }
 
 impl Component for FieldSelector {
@@ -58,15 +58,15 @@ impl Component for FieldSelector {
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         let state = State {
-            name: props.name,
-            ftype: props.ftype,
+            name: props.name.clone(),
+            ftype: props.ftype.clone(),
             selected_field: None,
         };
 
         FieldSelector { 
-            state: state,
+            state,
             link,
-            onchange: props.onchange,
+            props
         }
     }
 
@@ -74,7 +74,7 @@ impl Component for FieldSelector {
         match msg {
             Msg::OnChange => {
                 if let Some(selected) = &self.state.selected_field {
-                    self.onchange.emit((selected.clone(), self.state.name.clone()));
+                    self.props.onchange.emit((selected.clone(), self.state.name.clone()));
                 } else {
                     // FIXME: We currently don't support clearing the contents of a field
                     panic!("Attempted to update mapping without selecting an item");
@@ -113,6 +113,15 @@ impl Component for FieldSelector {
                 false
             }
             _ => false
+        }
+    }
+
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        if self.props != props {
+            self.props = props;
+            true
+        } else {
+            false
         }
     }
 

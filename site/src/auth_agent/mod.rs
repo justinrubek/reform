@@ -63,13 +63,11 @@ pub fn is_authenticated() -> bool {
 /// Http request
 #[derive(Default, Debug)]
 struct Requests {
-    fetch: FetchService,
 }
 
 impl Requests {
     fn new() -> Self {
         Self {
-            fetch: FetchService::new(),
         }
     }
 
@@ -120,7 +118,7 @@ impl Requests {
         let request = builder.body(body).unwrap();
         debug!("Request: {:?}", request);
 
-        self.fetch.fetch(request, handler.into()).expect("Failed to create fetch task")
+        FetchService::fetch(request, handler.into()).expect("Failed to create fetch task")
     }
 
     /// Delete request

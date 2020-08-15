@@ -16,12 +16,8 @@ use crate::types::EntryInfo;
  */
 
 pub struct EntryItem {
-    state: EntryItemState,
     link: ComponentLink<Self>,
-}
-
-struct EntryItemState {
-    entry: EntryInfo,
+    props: Props,
 }
 
 pub enum Msg {
@@ -29,7 +25,7 @@ pub enum Msg {
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    pub entry: Option<EntryInfo>,
+    pub entry: EntryInfo,
 }
 
 
@@ -38,31 +34,36 @@ impl Component for EntryItem {
     type Properties = Props;
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        // Attempt to fetch schemas
-        let state = EntryItemState {
-            entry: props.entry.expect("EntryInfo with no entry"),
-        };
-
         EntryItem { 
-            state,
             link,
+            props,
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         true
     }
+
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        if self.props != props {
+            self.props = props;
+            true
+        } else {
+            false
+        }
+    }
+
     fn view(&self) -> Html {
         html! {
             <>
                 <div class="media-left">
-                    <p>{format!("id: {}", self.state.entry.id)}</p>
+                    <p>{format!("id: {}", self.props.entry.id)}</p>
                 </div>
                 <div class="media-center">
-                    <p>{format!("data: {}", self.state.entry.data)}</p>
+                    <p>{format!("data: {}", self.props.entry.data)}</p>
                 </div>
                 <div class="media-right">
-                    <p>{format!("s_id: {}", self.state.entry.schema_id)}</p>
+                    <p>{format!("s_id: {}", self.props.entry.schema_id)}</p>
                 </div>
             </>
         }

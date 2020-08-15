@@ -31,10 +31,11 @@ wasm-bindgen = "^0.2"
 web_logger = "0.2"
 
 [dependencies.yew]
+version = "0.17.2"
+default-features = false
+features = ["std_web"]
+
+[dependencies.yew-router]
 version = "0.14"
 default-features = false
-features = ["std_web"]
-[dependencies.yew-router]
-version = "0.11"
-default-features = false
-features = ["std_web"]
+features = ["std_web", "router", "service", "components"]

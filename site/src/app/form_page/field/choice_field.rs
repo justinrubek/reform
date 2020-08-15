@@ -1,6 +1,7 @@
-use yew::components::Select;
 use yew::format::Json;
 use yew::prelude::*;
+
+use crate::components::Select;
 
 struct State {
     choices: Vec<String>,
@@ -21,7 +22,7 @@ pub struct Props {
 pub struct ChoiceField {
     state: State,
     link: ComponentLink<Self>,
-    onchange: Callback<Vec<String>>,
+    props: Props,
 }
 
 impl Component for ChoiceField {
@@ -36,14 +37,14 @@ impl Component for ChoiceField {
         ChoiceField { 
             state: state,
             link,
-            onchange: props.onchange,
+            props
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::OnChange => {
-                self.onchange.emit(self.state.choices.clone());
+                self.props.onchange.emit(self.state.choices.clone());
                 true
             }
             Msg::AddChoice => {
@@ -62,6 +63,15 @@ impl Component for ChoiceField {
                 true
             }
             _ => false
+        }
+    }
+
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        if self.props != props {
+            self.props = props;
+            true 
+        } else {
+            false
         }
     }
 

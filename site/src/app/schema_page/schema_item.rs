@@ -17,14 +17,14 @@ use super::entry_item::EntryItem;
  */
 
 pub struct SchemaItem {
-    state: SchemaItemState,
+    state: State,
     link: ComponentLink<Self>,
     fetch: auth_agent::Entry,
     task: Option<FetchTask>,
+    props: Props,
 }
 
-struct SchemaItemState {
-    schema: SchemaInfo,
+struct State {
     entries: Vec<EntryInfo>,
 }
 
@@ -36,7 +36,7 @@ pub enum Msg {
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    pub schema: Option<SchemaInfo>,
+    pub schema: SchemaInfo,
 }
 
 
@@ -46,8 +46,7 @@ impl Component for SchemaItem {
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         // Attempt to fetch schemas
-        let state = SchemaItemState {
-            schema: props.schema.expect("SchemaItem rendered with no schema"),
+        let state = State {
             entries: Default::default(),
         };
 
@@ -56,6 +55,7 @@ impl Component for SchemaItem {
             link,
             fetch: auth_agent::Entry::new(),
             task: None,
+            props,
         }
     }
 
@@ -72,7 +72,7 @@ impl Component for SchemaItem {
                 true
             }
             Msg::SendFetch => {
-                let task = self.fetch.get_by_schema_id(self.state.schema.id,
+                let task = self.fetch.get_by_schema_id(self.props.schema.id,
                     self.link.callback(|response: Result<Vec<EntryInfo>, Error>| {
                         match response {
                             Ok(list) => Msg::FetchSuccess(list),
@@ -85,22 +85,32 @@ impl Component for SchemaItem {
             _ => false,
         }
     }
-// { <EntryItem entry={Some(entry.clone())} /> }
+
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        if self.props != props {
+            self.props = props;
+            self.link.send_message(Msg::SendFetch);
+            true
+        } else {
+            false
+        }
+    }
+
     fn view(&self) -> Html {
         let entries = self.state.entries.iter().map(|entry| {
            html! { 
                <div class="media">
-                   <EntryItem entry={Some(entry.clone())} />
+                   <EntryItem entry={entry.clone()} />
                </div>
            }
         }).collect::<Html>();
         html! {
             <div class="media">
                 <div class="media-left">
-                    <p>{format!("id: {}", self.state.schema.id)}</p>
+                    <p>{format!("id: {}", self.props.schema.id)}</p>
                 </div>
                 <div class="media-content">
-                    <p>{format!("data: {}", self.state.schema.data)}</p>
+                    <p>{format!("data: {}", self.props.schema.data)}</p>
                     {entries}
                 </div>
                 <div class="media-right">

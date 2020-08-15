@@ -38,6 +38,8 @@ pub mod error;
 pub mod types;
 mod app;
 
+mod components;
+
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

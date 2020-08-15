@@ -9,10 +9,10 @@ use crate::types::FormInfo;
 pub struct FormItem {
     state: State,
     link: ComponentLink<Self>,
+    props: Props,
 }
 
 struct State {
-    form: FormInfo,
 }
 
 pub enum Msg {
@@ -20,7 +20,7 @@ pub enum Msg {
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    pub form: Option<FormInfo>,
+    pub form: FormInfo,
 }
 
 
@@ -30,12 +30,12 @@ impl Component for FormItem {
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         let state = State {
-            form: props.form.expect("FormItem rendered with no form"),
         };
 
         FormItem { 
             state,
             link,
+            props,
         }
     }
 
@@ -45,14 +45,23 @@ impl Component for FormItem {
         }
     }
 
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        if self.props != props {
+            self.props = props;
+            true
+        } else {
+            false
+        }
+    }
+
     fn view(&self) -> Html {
         html! {
             <div class="media">
                 <div class="media-left">
-                    <p>{format!("id: {}", self.state.form.id)}</p>
+                    <p>{format!("id: {}", self.props.form.id)}</p>
                 </div>
                 <div class="media-left">
-                    <p>{format!("name: {}", self.state.form.name)}</p>
+                    <p>{format!("name: {}", self.props.form.name)}</p>
                 </div>
                 <div class="media-right">
                     <button class="button" >{"edit"}</button>

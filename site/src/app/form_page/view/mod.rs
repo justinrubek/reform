@@ -14,7 +14,6 @@ pub struct ViewForms {
     fetch: auth_agent::Form,
     link: ComponentLink<Self>,
     task: Option<FetchTask>,
-    onback: Option<Callback<()>>,
 }
 
 #[derive(Default)]
@@ -27,17 +26,12 @@ pub enum Msg {
     FetchFailure(Error),
 }
 
-#[derive(Clone, PartialEq, Properties)]
-pub struct Props {
-    pub onback: Option<Callback<()>>,
-}
-
 
 impl Component for ViewForms {
     type Message = Msg;
-    type Properties = Props;
+    type Properties = ();
 
-    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+    fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         // Attempt to fetch forms
         let mut fetch = auth_agent::Form::new();
         let task = fetch.get_all(link.callback(|response: Result<Vec<FormInfo>, Error>| {
@@ -52,7 +46,6 @@ impl Component for ViewForms {
             fetch: fetch,
             link,
             task: Some(task),
-            onback: props.onback,
         }
     }
 
@@ -75,13 +68,17 @@ impl Component for ViewForms {
         }
     }
 
+    fn change(&mut self, _: Self::Properties) -> ShouldRender {
+        false
+    }
+
     fn view(&self) -> Html {
         html! {
             <>
                 <h1 class="title">{"Forms"}</h1>
                 <div class="container">
                     {self.state.forms.iter().map(|form| {
-                       html! { <FormItem form={Some(form.clone())} /> }
+                       html! { <FormItem form={form.clone()} /> }
                     }).collect::<Html>()}
                 </div>
             </>

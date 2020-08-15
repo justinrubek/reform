@@ -1,11 +1,11 @@
 use std::collections::HashMap;
 
-use yew::components::Select;
 use yew::format::Json;
 use yew::prelude::*;
 use yew::services::fetch::{FetchService, FetchTask, Response, Request};
 
 use crate::auth_agent;
+use crate::components::Select;
 use crate::types::SchemaInfo;
 use crate::error::Error;
 
@@ -42,9 +42,9 @@ pub struct Props {
 pub struct MappingItem {
     state: State,
     link: ComponentLink<Self>,
-    onchange: Callback<Mapping>,
     fetch: auth_agent::Schema,
     task: Option<FetchTask>,
+    props: Props,
 }
 
 // The format of our schema so that we may read the field names
@@ -76,7 +76,7 @@ impl Component for MappingItem {
         }));
 
         let state = State {
-            mapping: props.mapping,
+            mapping: props.mapping.clone(),
             schemas: Vec::new(),
             selected_schema: None,
         };
@@ -84,16 +84,16 @@ impl Component for MappingItem {
         MappingItem { 
             state: state,
             link,
-            onchange: props.onchange,
             fetch: fetch,
             task: Some(task),
+            props,
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::OnChange => {
-                self.onchange.emit(self.state.mapping.clone());
+                self.props.onchange.emit(self.state.mapping.clone());
                 true
             }
             Msg::FetchSuccess(data) => {
@@ -126,6 +126,15 @@ impl Component for MappingItem {
                 true
             }
             _ => false
+        }
+    }
+
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        if self.props != props {
+            self.props = props;
+            true
+        } else {
+            false
         }
     }
 
@@ -188,19 +197,3 @@ impl Component for MappingItem {
         }
     }
 }
-
-/*
-            OnDrop(DragDropEvent),
-            OnDragover(DragOverEvent),
-            Msg::OnDrop(event) => {
-                event.prevent_default();
-
-
-                true
-            }
-            Msg::OnDragover(event) => {
-                // Prevent default to allow dropping here
-                event.prevent_default();
-                false
-            }
-*/

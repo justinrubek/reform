@@ -35,6 +35,10 @@ impl Component for IndexComponent {
         false
     }
 
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        false
+    }
+
     fn view(&self) -> Html {
         html! {
             <p>{"Index"}</p>

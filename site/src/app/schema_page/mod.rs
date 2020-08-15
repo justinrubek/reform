@@ -25,7 +25,6 @@ pub struct SchemaPage {
     fetch: auth_agent::Schema,
     link: ComponentLink<Self>,
     task: Option<FetchTask>,
-    onback: Option<Callback<()>>,
 }
 
 #[derive(Default)]
@@ -38,17 +37,11 @@ pub enum Msg {
     FetchFailure(Error),
 }
 
-#[derive(Clone, PartialEq, Properties)]
-pub struct Props {
-    pub onback: Option<Callback<()>>,
-}
-
-
 impl Component for SchemaPage {
     type Message = Msg;
-    type Properties = Props;
+    type Properties = ();
 
-    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+    fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         // Attempt to fetch schemas
         let mut fetch = auth_agent::Schema::new();
         let task = fetch.get_all(link.callback(|response: Result<Vec<SchemaInfo>, Error>| {
@@ -63,7 +56,6 @@ impl Component for SchemaPage {
             fetch: fetch,
             link,
             task: Some(task),
-            onback: props.onback,
         }
     }
 
@@ -86,13 +78,17 @@ impl Component for SchemaPage {
         }
     }
 
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        false
+    }
+
     fn view(&self) -> Html {
         html! {
             <>
                 <h1 class="title">{"Schemas"}</h1>
                 <div class="container">
                     {self.state.schemas.iter().map(|schema| {
-                       html! { <SchemaItem schema={Some(schema.clone())} /> }
+                       html! { <SchemaItem schema={schema.clone()} /> }
                     }).collect::<Html>()}
                 </div>
             </>
