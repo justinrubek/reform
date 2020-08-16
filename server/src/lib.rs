@@ -11,6 +11,8 @@ extern crate diesel;
 #[macro_use]
 extern crate validator_derive;
 
+extern crate valico;
+
 mod auth;
 mod config;
 mod db;
