@@ -7,7 +7,7 @@ use yew::prelude::*;
 use yew::services::fetch::{FetchService, FetchTask, Request, Response};
 
 mod field;
-use field::{Field, FormField};
+use field::{Field, FormField, Type};
 
 #[derive(Clone, PartialEq, Deserialize)]
 struct Mapping {
@@ -34,7 +34,7 @@ pub struct Form {
 #[derive(Debug)]
 struct FieldData {
     name: String,
-    data: String,
+    data: serde_json::Value,
 }
 
 impl ToString for FieldData {
@@ -51,7 +51,7 @@ struct State {
 pub enum Msg {
     GetFormSuccess(FormInfo),
     GetFormFailure,
-    UpdateField(usize, String),
+    UpdateField(usize, serde_json::Value),
     Submit,
     SubmitSuccess,
     SubmitFailure,
@@ -101,9 +101,15 @@ impl Component for Form {
                 // Create empty data for each field
                 let mut field_data = Vec::new();
                 form_info.fields.iter().for_each(|field| {
+                    let initial_data = match field.ftype {
+                        field::Type::Number => json!(0),
+                        field::Type::Text => json!(""),
+                        field::Type::Choice => json!(""),
+                    };
+
                     field_data.push(FieldData {
                         name: field.name.clone(),
-                        data: String::new(),
+                        data: initial_data,
                     })
                 });
 
@@ -131,11 +137,11 @@ impl Component for Form {
                 let mappings = self.state.form.clone().unwrap().mappings.clone();
                 for mapping in &mappings {
                     // Retrieve the values to be filled into the schema slots
-                    let mut fields: HashMap<String, String> = HashMap::new();
+                    let mut fields: HashMap<String, serde_json::Value> = HashMap::new();
                     for (from, to) in &mapping.field_mappings {
                         // Retrieve the value of 'from' from the form and apply to schema name 'to'
-                        let value: String = {
-                            let mut val: String = "null".into();
+                        let value: serde_json::Value = {
+                            let mut val: serde_json::Value = "null".into();
                             info!(" field_data{:?}", self.state.field_data);
                             for data in self.state.field_data.iter() {
                                 if data.name.eq(from) {

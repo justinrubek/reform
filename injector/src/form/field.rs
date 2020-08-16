@@ -11,6 +11,10 @@ pub enum Type {
     Choice,
 }
 
+pub enum FieldValue {
+
+}
+
 #[derive(Clone, PartialEq, Deserialize)]
 pub struct FormField {
     pub name: String,
@@ -22,16 +26,18 @@ pub struct FormField {
 pub struct Field {
     link: ComponentLink<Self>,
     state: State,
-    onchange: Callback<String>,
+    onchange: Callback<serde_json::Value>,
 }
 
 struct State {
     field: FormField,
-    value: String,
+    value: serde_json::Value,
 }
 
 pub enum Msg {
-    UpdateField(String),
+    UpdateField(serde_json::Value),
+    InvalidInput,
+    NoOp,
 }
 
 #[derive(Clone, PartialEq, Properties)]
@@ -39,9 +45,9 @@ pub struct Props {
     #[props(required)]
     pub field: FormField,
     #[props(required)]
-    pub onchange: Callback<String>,
+    pub onchange: Callback<serde_json::Value>,
     #[props(required)]
-    pub value: String,
+    pub value: serde_json::Value,
 }
 
 impl Component for Field {
@@ -64,7 +70,11 @@ impl Component for Field {
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::UpdateField(data) => {
+                self.state.value = data.clone();
                 self.onchange.emit(data);
+                true
+            }
+            Msg::InvalidInput => {
                 true
             }
             _ => true,
@@ -74,45 +84,58 @@ impl Component for Field {
     fn view(&self) -> Html {
         let input_field = match self.state.field.ftype {
             Type::Number => {
-                html!{
+                let value = self.state.value.clone();
+                let callback = self.link.callback(move |event: InputData| {
+                    info!("Number changed");
+                    match event.value.parse::<isize>() {
+                        Ok(integer) => Msg::UpdateField(json!(integer)),
+                        _ => match event.value.parse::<f64>() {
+                            Ok(float) => {
+                                Msg::UpdateField(json!(float))
+                            }
+                            _ => Msg::InvalidInput
+                        }
+                    }
+                });
+
+                html! {
                     <input 
                         type="number" 
-                        onchange=self.link.callback(|event: Event| {
-                            if let ChangeData::Value(val) = event {
-                                Msg::UpdateField(val)
-                            } else {
-                                panic!("Onchange value not a string");
-                            }
-                        })
+                        name=self.state.field.name
+                        oninput=callback
                         value=self.state.value />
                 }
             }
             Type::Text => {
-                html!{
-                    <input type="text" 
-                        onchange=self.link.callback(|event: Event| {
-                            if let ChangeData::Value(val) = event {
-                                Msg::UpdateField(val)
-                            } else {
-                                panic!("Onchange value not a string");
-                            }
-                        })
-                        value=self.state.value 
-                        class="input"/>
+                if let serde_json::Value::String(value) = &self.state.value {
+                    html!{
+                        <input type="text" name=self.state.field.name 
+                            onchange=self.link.callback(|event: Event| {
+                                if let ChangeData::Value(val) = event {
+                                    Msg::UpdateField(json!(val))
+                                } else {
+                                    panic!("Onchange value not a string");
+                                }
+                            })
+                            value=self.state.value.as_str().expect("No string value for text")
+                            class="input"/>
+                    }
+                } else {
+                    unreachable!();
                 }
             }
             Type::Choice => {
                 let options = self.state.field.data.as_ref().unwrap();
 
                 html!{
-                    <Select<String> options=options onchange=self.link.callback(|v| Msg::UpdateField(v)) />
+                    <Select<String> options=options onchange=self.link.callback(|v| Msg::UpdateField(json!(v))) />
                 }
             }
         };
 
         html! {
             <div>
-                <label class="label">{&self.state.field.label}</label>
+                <label class="label" for=self.state.field.name>{&self.state.field.label}</label>
                 {input_field}
             </div>
         }
