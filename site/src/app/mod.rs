@@ -3,13 +3,11 @@ use yew_router::prelude::*;
 
 use yew_router::router::Router;
 
-use crate::auth_agent::{is_authenticated, set_token};
-
 mod index_component;
 use index_component::IndexComponent;
 
 mod dashboard_component;
-use dashboard_component::{DashboardComponent, DashboardRoute};
+use dashboard_component::DashboardComponent;
 
 mod signup_page;
 use signup_page::SignupPage;
@@ -17,24 +15,28 @@ use signup_page::SignupPage;
 mod login_page;
 use login_page::LoginPage;
 
-mod schema_page;
-use schema_page::SchemaPage;
-use schema_page::create_schema::CreateSchema;
+mod schema;
+use schema::view::ViewSchemas;
+use schema::create::CreateSchema;
 
 mod form_page;
-use form_page::FormPage;
+use form_page::create::CreateForm;
 use form_page::view::ViewForms;
 
 #[derive(Clone, Debug, Switch)]
 pub enum AppRoute {
-    #[to = "/"]
-    Index,
     #[to = "/login"]
     Login,
     #[to = "/signup"]
     Signup,
-    #[to = "/dashboard{*:rest}"]
-    Dashboard(DashboardRoute),
+    #[to = "/dashboard/create/form"]
+    CreateForm,
+    #[to = "/dashboard/create/schema"]
+    CreateSchema,
+    #[to = "/dashboard"]
+    Dashboard,
+    #[to = "/!"]
+    Index,
 }
 
 pub struct App {
@@ -46,7 +48,6 @@ struct State {
 }
 
 pub enum Msg {
-    LogIn(String),
 }
 
 impl Component for App {
@@ -65,23 +66,7 @@ impl Component for App {
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-            Msg::LogIn(data) => {
-                #[derive(Deserialize)]
-                struct LoginResponseData {
-                    email: String,
-                    token: String
-                }
-                #[derive(Deserialize)]
-                struct LoginResponse {
-                    user: LoginResponseData
-                }
-
-                let response: LoginResponse = serde_json::from_str(&data).expect("Login token format invalid");
-                set_token(Some(response.user.token));
-                true
-            }
-
-            _ => true
+            _ => false
         }
     }
 
@@ -91,16 +76,20 @@ impl Component for App {
 
     fn view(&self) -> Html {
         html! {
-            <Router<AppRoute, ()>
-                render = Router::render(|switch: AppRoute| {
-                    match switch {
-                        AppRoute::Index => html!{<IndexComponent />},
-                        AppRoute::Login => html!{<LoginPage />},
-                        AppRoute::Signup => html!{<SignupPage />},
-                        AppRoute::Dashboard(dashboard_route) => html!{<DashboardComponent route=dashboard_route />},
-                    }
-                })
-            />
+            <div class="container">
+                <Router<AppRoute, ()>
+                    render = Router::render(|switch: AppRoute| {
+                        match switch {
+                            AppRoute::Index => html!{<IndexComponent />},
+                            AppRoute::Login => html!{<LoginPage />},
+                            AppRoute::Signup => html!{<SignupPage />},
+                            AppRoute::CreateForm => html!{<CreateForm />},
+                            AppRoute::CreateSchema => html!{<CreateSchema />},
+                            AppRoute::Dashboard => html!{<DashboardComponent />},
+                        }
+                    })
+                />
+            </div>
         }
     }
 }

@@ -1,38 +1,26 @@
 use yew::prelude::*;
-use yew_router::{route::Route, service::RouteService};
+use yew_router::{route::Route, router::Router, service::RouteService, prelude::*};
 
 use crate::auth_agent::{is_authenticated, set_token};
-use super::AppRoute;
+use crate::app::form_page::view::ViewForms;
+use crate::app::schema::view::ViewSchemas;
 
-#[derive(Clone, Debug, PartialEq, Switch)]
-pub enum DashboardRoute {
-    #[to = "/form"]
-    CreateForm,
-    #[to = "/schema"]
-    CreateSchema,
-}
+use super::AppRoute;
 
 pub struct DashboardComponent {
     link: ComponentLink<Self>,
     state: State,
-    props: Props,
 }
 
 struct State {
 }
 
 pub enum Msg {
-    ChangeRoute(AppRoute),
-}
-
-#[derive(Clone, PartialEq, Properties)]
-pub struct Props {
-    pub route: DashboardRoute,
 }
 
 impl Component for DashboardComponent {
     type Message = Msg;
-    type Properties = Props;
+    type Properties = ();
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         let state = State { 
@@ -41,7 +29,6 @@ impl Component for DashboardComponent {
         DashboardComponent {
             link,
             state,
-            props,
         }
     }
 
@@ -50,17 +37,18 @@ impl Component for DashboardComponent {
     }
 
     fn change(&mut self, props: Self::Properties) -> ShouldRender {
-        if self.props != props {
-            self.props = props;
-            true
-        } else {
-            false
-        }
+        false
     }
 
     fn view(&self) -> Html {
         html! {
-            <p>{"Dashboard"}</p>
+            <div>
+                <h1 class="title">{"Dashboard"}</h1>
+                <ViewSchemas />
+                <RouterButton<AppRoute> route=AppRoute::CreateSchema classes="button">{"New Schema"}</RouterButton<AppRoute>>
+                <ViewForms />
+                <RouterButton<AppRoute> route=AppRoute::CreateForm classes="button">{"New Form"}</RouterButton<AppRoute>>
+            </div>
         }
     }
 }

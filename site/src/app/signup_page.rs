@@ -2,10 +2,13 @@ use yew::format::Json;
 use yew::prelude::*;
 use yew::services::fetch::{FetchService, FetchTask, Response, Request};
 
+use yew_router::{agent::RouteRequest, prelude::*};
+
 pub struct SignupPage {
     state: SignupData,
     link: ComponentLink<Self>,
     task: Option<FetchTask>,
+    router: Box<dyn Bridge<RouteAgent>>,
 }
 
 #[derive(Default, Serialize, Clone)]
@@ -20,6 +23,7 @@ pub enum Msg {
     UpdateEmail(String),
     UpdatePassword(String),
     DoSignup,
+    NoOp,
 }
 
 impl Component for SignupPage {
@@ -27,10 +31,13 @@ impl Component for SignupPage {
     type Properties = ();
 
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
+        let router = RouteAgent::bridge(link.callback(|_| Msg::NoOp));
+
         SignupPage { 
             state: Default::default(),
             link,
             task: None,
+            router,
         }
     }
 
@@ -44,9 +51,14 @@ impl Component for SignupPage {
                 self.state.password = password;
                 true
             }
-            Msg::SignupSuccess(token) => {
-                info!("Signup success: {}", token);
+            Msg::SignupSuccess(data) => {
+                info!("Signup success: {}", data);
                 self.task = None;
+
+                // Redirect to login page
+                let route = Route::from("/login".to_string());
+                self.router.send(RouteRequest::ChangeRoute(route));
+
                 false
             }
             Msg::SignupFailure => {
@@ -95,17 +107,24 @@ impl Component for SignupPage {
     fn view(&self) -> Html {
         html! {
             <>
+                <label class="label" for="email">{"Email"}</label>
                 <input type="text"
                        value=self.state.email 
                        name="email" 
                        oninput=self.link.callback(|e: InputData| Msg::UpdateEmail(e.value))
+                       class="input"
                        />
+                <label class="label" for="password">{"Password"}</label>
                 <input type="password"
                        value=self.state.password 
                        name="password" 
                        oninput=self.link.callback(|e: InputData| Msg::UpdatePassword(e.value))
+                       class="input"
                        />
-                <button onclick=self.link.callback(|_| Msg::DoSignup) >{"Sign up"}</button>
+                <button 
+                    onclick=self.link.callback(|_| Msg::DoSignup) 
+                    class="button"
+                    >{"Sign up"}</button>
             </>
         }
     }

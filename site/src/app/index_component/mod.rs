@@ -1,5 +1,5 @@
 use yew::prelude::*;
-use yew_router::{route::Route, service::RouteService};
+use yew_router::{route::Route, service::RouteService, prelude::*};
 
 use crate::auth_agent::{is_authenticated, set_token};
 
@@ -41,7 +41,12 @@ impl Component for IndexComponent {
 
     fn view(&self) -> Html {
         html! {
-            <p>{"Index"}</p>
+            <>
+                <h2>{"Index"}</h2>
+                <RouterButton<AppRoute> route=AppRoute::Login classes="button">{"Log in"}</RouterButton<AppRoute>>
+                <RouterButton<AppRoute> route=AppRoute::Signup classes="button">{"Create an account"}</RouterButton<AppRoute>>
+            </>
+
         }
     }
 }

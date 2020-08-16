@@ -10,17 +10,8 @@ mod schema_item;
 use schema_item::SchemaItem;
 
 pub mod entry_item;
-pub mod create_schema;
 
-/* SchemaPage:
- * Actions to faciliate:
- *  Creation of schema
- *  Deletion of schema -> May be unwise to do this, as it is in use?
- *  Edit by modify -> This may not be needed, as they can just create a new one themselves
- *  Get identifier for schema for use elsewhere
- */
-
-pub struct SchemaPage {
+pub struct ViewSchemas {
     state: SchemaState,
     fetch: auth_agent::Schema,
     link: ComponentLink<Self>,
@@ -37,7 +28,7 @@ pub enum Msg {
     FetchFailure(Error),
 }
 
-impl Component for SchemaPage {
+impl Component for ViewSchemas {
     type Message = Msg;
     type Properties = ();
 
@@ -51,7 +42,7 @@ impl Component for SchemaPage {
             }
         }));
 
-        SchemaPage { 
+        ViewSchemas { 
             state: Default::default(),
             fetch: fetch,
             link,

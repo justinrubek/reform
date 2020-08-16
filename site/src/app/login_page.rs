@@ -4,10 +4,15 @@ use yew::format::Json;
 use yew::prelude::*;
 use yew::services::fetch::{FetchService, FetchTask, Response, Request};
 
+use yew_router::{agent::RouteRequest, prelude::*};
+
+use crate::auth_agent::set_token;
+
 pub struct LoginPage {
     state: LoginData,
     link: ComponentLink<Self>,
     task: Option<FetchTask>,
+    router: Box<dyn Bridge<RouteAgent>>,
 }
 
 #[derive(Default, Serialize, Clone)]
@@ -22,6 +27,7 @@ pub enum Msg {
     UpdateEmail(String),
     UpdatePassword(String),
     DoLogin,
+    NoOp,
 }
 
 impl Component for LoginPage {
@@ -29,10 +35,13 @@ impl Component for LoginPage {
     type Properties = ();
 
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
+        let router = RouteAgent::bridge(link.callback(|_| Msg::NoOp));
+
         LoginPage { 
             state: Default::default(),
             link,
             task: None,
+            router,
         }
     }
 
@@ -46,10 +55,30 @@ impl Component for LoginPage {
                 self.state.password = password;
                 true
             }
-            Msg::LoginSuccess(token) => {
+            Msg::LoginSuccess(data) => {
                 info!("Login success");
                 self.task = None;
-                // TODO: Store login token and navigate to dashboard
+
+                // Extract data from response
+                #[derive(Deserialize)]
+                struct LoginResponseData {
+                    email: String,
+                    token: String
+                }
+                #[derive(Deserialize)]
+                struct LoginResponse {
+                    user: LoginResponseData
+                }
+
+                let response: LoginResponse = serde_json::from_str(&data).expect("Login token format invalid");
+
+                // Store login token 
+                set_token(Some(response.user.token));
+
+                // Navigate to dashboard
+                let route = Route::from("/dashboard".to_string());
+                self.router.send(RouteRequest::ChangeRoute(route));
+
                 false
             }
             Msg::LoginFailure => {
@@ -62,7 +91,6 @@ impl Component for LoginPage {
                 // TODO: Disable the login button to prevent duplicate reuqests
                 debug!("DoLogin");
                 let url = "/api/login";
-
 
                 let request = Request::post(url)
                     .header("Content-Type", "application/json")
@@ -94,17 +122,24 @@ impl Component for LoginPage {
     fn view(&self) -> Html {
         html! {
             <>
+                <label class="label" for="email">{"Email"}</label>
                 <input type="text"
                        value=self.state.email 
                        name="email" 
                        oninput=self.link.callback(|e: InputData| Msg::UpdateEmail(e.value))
+                       class="input"
                        />
+                <label class="label" for="password">{"password"}</label>
                 <input type="password"
                        value=self.state.password 
                        name="password" 
                        oninput=self.link.callback(|e: InputData| Msg::UpdatePassword(e.value))
+                       class="input"
                        />
-                <button onclick=self.link.callback(|_| Msg::DoLogin) >{"Log in"}</button>
+                <button 
+                    onclick=self.link.callback(|_| Msg::DoLogin) 
+                    class="button"
+                >{"Log in"}</button>
             </>
         }
     }
