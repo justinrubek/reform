@@ -19,6 +19,7 @@ table! {
     schemas (id) {
         id -> Int4,
         data -> Jsonb,
+        name -> Text,
     }
 }
 

@@ -107,9 +107,10 @@ impl Component for SchemaItem {
         html! {
             <div class="media">
                 <div class="media-left">
-                    <p>{format!("id: {}", self.props.schema.id)}</p>
+                    <p>{format!("name: {}", self.props.schema.name)}</p>
                 </div>
                 <div class="media-content">
+                    <p>{format!("id: {}", self.props.schema.id)}</p>
                     <p>{format!("data: {}", self.props.schema.data)}</p>
                     {entries}
                 </div>

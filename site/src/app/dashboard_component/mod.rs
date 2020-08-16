@@ -2,7 +2,7 @@ use yew::prelude::*;
 use yew_router::{route::Route, router::Router, service::RouteService, prelude::*};
 
 use crate::auth_agent::{is_authenticated, set_token};
-use crate::app::form_page::view::ViewForms;
+use crate::app::form::view::ViewForms;
 use crate::app::schema::view::ViewSchemas;
 
 use super::AppRoute;

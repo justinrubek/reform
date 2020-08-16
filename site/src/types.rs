@@ -8,11 +8,13 @@ use serde_json::Value;
 pub struct SchemaInfo {
     pub id: u32,
     pub data: serde_json::Value,
+    pub name: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct SchemaCreateInfo {
     pub data: serde_json::Value,
+    pub name: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

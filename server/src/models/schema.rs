@@ -6,5 +6,6 @@ use crate::schema::schemas;
 pub struct Schema {
     pub id: i32,
     pub data: serde_json::Value,
+    pub name: String,
 }
 

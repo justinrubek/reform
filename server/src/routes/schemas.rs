@@ -9,10 +9,10 @@ use serde::Deserialize;
 use validator::Validate;
 
 
-// TODO: See if we need to validate json schema here
 #[derive(Deserialize, Validate)]
 pub struct NewSchema {
     data: Option<serde_json::Value>,
+    name: Option<String>,
 }
 
 #[post("/schemas", format = "json", data = "<new_schema>")]
@@ -25,10 +25,14 @@ pub fn post_schema(
 
     let mut extractor = FieldValidator::validate(&new_schema);
     let data = extractor.extract("data", new_schema.data);
+    let name = extractor.extract("name", new_schema.name);
+
+// TODO: Validate json schema here
+// What's keeping us from this is the nature of numbers to be stored as text
 
     extractor.check()?;
 
-    db::schemas::create(&conn, &data)
+    db::schemas::create(&conn, &data, &name)
         .map(|schema| json!(schema))
         .map_err(|error| {
             Errors::new(&[("json schema", "invalid")])

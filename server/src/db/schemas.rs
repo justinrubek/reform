@@ -9,6 +9,7 @@ use serde::Deserialize;
 #[table_name = "schemas"]
 pub struct NewSchema<'a> {
     pub data: &'a serde_json::Value,
+    pub name: &'a str,
 }
 
 pub enum SchemaCreationError {
@@ -27,9 +28,11 @@ impl From<Error> for SchemaCreationError {
 pub fn create(
     conn: &PgConnection,
     data: &serde_json::Value,
+    name: &str,
 ) -> Result<Schema, SchemaCreationError> {
     let new_schema = &NewSchema {
         data,
+        name,
     };
 
     diesel::insert_into(schemas::table)
@@ -55,6 +58,7 @@ pub fn find_all(conn: &PgConnection) -> Option<Vec<Schema>> {
 #[table_name = "schemas"]
 pub struct UpdateSchemaData {
     data: Option<serde_json::Value>,
+    name: Option<String>
 }
 
 pub fn update(conn: &PgConnection, id: i32, data: &UpdateSchemaData) -> Option<Schema> {

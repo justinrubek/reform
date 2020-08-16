@@ -19,9 +19,9 @@ mod schema;
 use schema::view::ViewSchemas;
 use schema::create::CreateSchema;
 
-mod form_page;
-use form_page::create::CreateForm;
-use form_page::view::ViewForms;
+mod form;
+use form::create::CreateForm;
+use form::view::ViewForms;
 
 #[derive(Clone, Debug, Switch)]
 pub enum AppRoute {

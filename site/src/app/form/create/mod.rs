@@ -24,9 +24,11 @@ pub struct CreateForm {
 struct State {
     fields: Vec<Field>,
     mappings: Vec<Mapping>,
+    name: String,
 }
 
 pub enum Msg {
+    UpdateName(String),
     UpdateField(usize, Field),
     AddField,
     PostForm,
@@ -50,6 +52,10 @@ impl Component for CreateForm {
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
+            Msg::UpdateName(name) => {
+                self.state.name = name;
+                true
+            }
             Msg::UpdateField(i, field) => {
                 self.state.fields[i] = field;
                 true
@@ -62,20 +68,19 @@ impl Component for CreateForm {
                 true
             }
             Msg::CreateFormFailure => {
+                // TODO: Respond
                 true
             }
             Msg::PostForm => {
                 // TODO: Disable the login button to prevent duplicate reuqests
 
                 // TODO: Implement name choice
-                let name = "Form";
-
                 let fields = json!(self.state.fields);
 
                 let mappings = json!(self.state.mappings);
 
                 let form_info = FormCreateInfo {
-                    name: name.into(),
+                    name: self.state.name.clone(),
                     fields: fields,
                     mappings: mappings,
                 };
@@ -117,6 +122,10 @@ impl Component for CreateForm {
                 <div class="container">
                     <div class="media">
                         <h2 class="title media-left">{"Fields"}</h2> 
+                        <label class="label" for="form_name">{"Name"}</label>
+                        <input class="input" type="text" name="form_name" value=self.state.name
+                        oninput=self.link.callback(|e: InputData| Msg::UpdateName(e.value))
+                        />
                         <button class="button media-right" onclick=self.link.callback(|_| Msg::AddField)>{"add field"}</button>
                     </div>
                     <table class="table">

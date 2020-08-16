@@ -23,9 +23,11 @@ pub struct CreateSchema {
 #[derive(Default)]
 struct State {
     fields: Vec<Field>,
+    name: String,
 }
 
 pub enum Msg {
+    UpdateName(String),
     UpdateField(usize, Field),
     AddField,
     PostSchema,
@@ -48,6 +50,10 @@ impl Component for CreateSchema {
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
+            Msg::UpdateName(name) => {
+                self.state.name = name;
+                true
+            }
             Msg::UpdateField(i, field) => {
                 self.state.fields[i] = field;
                 true
@@ -106,6 +112,7 @@ impl Component for CreateSchema {
 
                 let schema_info = SchemaCreateInfo {
                     data: schema_data,
+                    name: self.state.name.clone(),
                 };
 
                 self.task = Some(self.api_handler.create(schema_info, self.link.callback(move |response: Result<SchemaInfo, Error>| {
@@ -141,6 +148,10 @@ impl Component for CreateSchema {
             <>
                 <h1 class="title">{"Schema creator"}</h1>
                 <div class="container">
+                    <label class="label" for="schema_name">{"Name"}</label>
+                    <input class="input" type="text" name="schema_name" value=self.state.name
+                        oninput=self.link.callback(|e: InputData| Msg::UpdateName(e.value))
+                    />
                     <div class="media">
                         <h2 class="title media-left">{"Fields"}</h2> 
                         <button class="button media-right" onclick=self.link.callback(|_| Msg::AddField)>{"add field"}</button>

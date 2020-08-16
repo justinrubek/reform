@@ -4,7 +4,6 @@ extern crate anyhow;
 
 extern crate chrono;
 
-#[macro_use]
 extern crate dotenv_codegen;
 
 #[macro_use]

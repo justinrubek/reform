@@ -57,7 +57,7 @@ struct json_schema_form {
 
 impl ToString for SchemaInfo {
     fn to_string(&self) -> String {
-        format!("{}", self.id)
+        format!("{}({})", self.name, self.id)
     }
 }
 
