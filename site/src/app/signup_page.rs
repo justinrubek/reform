@@ -9,6 +9,7 @@ pub struct SignupPage {
     link: ComponentLink<Self>,
     task: Option<FetchTask>,
     router: Box<dyn Bridge<RouteAgent>>,
+    message: Html,
 }
 
 #[derive(Default, Serialize, Clone)]
@@ -19,11 +20,12 @@ struct SignupData {
 
 pub enum Msg {
     SignupSuccess(String),
-    SignupFailure,
+    SignupFailure(String),
     UpdateEmail(String),
     UpdatePassword(String),
     DoSignup,
     NoOp,
+    ClearMessage,
 }
 
 impl Component for SignupPage {
@@ -38,6 +40,7 @@ impl Component for SignupPage {
             link,
             task: None,
             router,
+            message: html!{},
         }
     }
 
@@ -61,9 +64,21 @@ impl Component for SignupPage {
 
                 false
             }
-            Msg::SignupFailure => {
-                warn!("Signup failure");
+            Msg::SignupFailure(error) => {
                 self.task = None;
+
+                self.message = html! {
+                    <article class="message is-danger">
+                        <div class="message-header">
+                            <p>{"Failed to signup"}</p>
+                            <button class="delete" aria-label="delete" onclick=self.link.callback(|_| Msg::ClearMessage)></button>
+                        </div>
+                        <div class="message-body">
+                        {error}
+                        </div>
+                    </article>
+                };
+
                 true
             }
             Msg::DoSignup => {
@@ -89,11 +104,15 @@ impl Component for SignupPage {
                     if meta.status.is_success() {
                         Msg::SignupSuccess(result.unwrap())
                     } else {
-                        Msg::SignupFailure
+                        Msg::SignupFailure(result.unwrap())
                     }
                 })).expect("Failed to get fetch task"));
 
 
+                true
+            }
+            Msg::ClearMessage => {
+                self.message = html!{};
                 true
             }
             _ => false
@@ -107,6 +126,7 @@ impl Component for SignupPage {
     fn view(&self) -> Html {
         html! {
             <>
+                {self.message.clone()}
                 <label class="label" for="email">{"Email"}</label>
                 <input type="text"
                        value=self.state.email 

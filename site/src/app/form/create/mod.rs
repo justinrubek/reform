@@ -18,6 +18,7 @@ pub struct CreateForm {
     link: ComponentLink<Self>,
     api_handler: auth_agent::Form,
     task: Option<FetchTask>,
+    message: Html,
 }
 
 #[derive(Default)]
@@ -33,8 +34,9 @@ pub enum Msg {
     AddField,
     PostForm,
     CreateFormSuccess(FormInfo),
-    CreateFormFailure,
+    CreateFormFailure(Error),
     UpdateMappings(Vec<Mapping>),
+    ClearMessage,
 }
 
 impl Component for CreateForm {
@@ -47,6 +49,7 @@ impl Component for CreateForm {
             link,
             api_handler: auth_agent::Form::new(),
             task: None,
+            message: html!{},
         }
     }
 
@@ -65,10 +68,32 @@ impl Component for CreateForm {
                 true
             }
             Msg::CreateFormSuccess(form_info) => {
+                self.message = html! {
+                    <article class="message is-primary">
+                        <div class="message-header">
+                            <p>{"Created form successfully"}</p>
+                            <button class="delete" aria-label="delete" onclick=self.link.callback(|_| Msg::ClearMessage)></button>
+                        </div>
+                        <div class="message-body">
+                        {format!("Created form {} with id {}", form_info.name, form_info.id)}
+                        </div>
+                    </article>
+                };
                 true
             }
-            Msg::CreateFormFailure => {
+            Msg::CreateFormFailure(error) => {
                 // TODO: Respond
+                self.message = html! {
+                    <article class="message is-danger">
+                        <div class="message-header">
+                            <p>{"Failed to create form"}</p>
+                            <button class="delete" aria-label="delete" onclick=self.link.callback(|_| Msg::ClearMessage)></button>
+                        </div>
+                        <div class="message-body">
+                        {error}
+                        </div>
+                    </article>
+                };
                 true
             }
             Msg::PostForm => {
@@ -86,12 +111,10 @@ impl Component for CreateForm {
                 };
 
                 self.task = Some(self.api_handler.create(form_info, self.link.callback(move |response: Result<FormInfo, Error>| {
-                    debug!("Response received for CreateSchema");
                     if response.is_ok() {
                         Msg::CreateFormSuccess(response.unwrap())
                     } else {
-                        warn!("{:?}", response.err());
-                        Msg::CreateFormFailure
+                        Msg::CreateFormFailure(response.err().unwrap())
                     }
                 })));
 
@@ -99,6 +122,10 @@ impl Component for CreateForm {
             }
             Msg::UpdateMappings(mappings) => {
                 self.state.mappings = mappings;
+                true
+            }
+            Msg::ClearMessage => {
+                self.message = html!{};
                 true
             }
             _ => false
@@ -118,6 +145,7 @@ impl Component for CreateForm {
 
         html! {
             <>
+                {self.message.clone()}
                 <h1 class="title">{"Form creator"}</h1>
                 <div class="container">
                     <div class="media">

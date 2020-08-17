@@ -13,6 +13,7 @@ pub struct LoginPage {
     link: ComponentLink<Self>,
     task: Option<FetchTask>,
     router: Box<dyn Bridge<RouteAgent>>,
+    message: Html,
 }
 
 #[derive(Default, Serialize, Clone)]
@@ -23,11 +24,12 @@ struct LoginData {
 
 pub enum Msg {
     LoginSuccess(String),
-    LoginFailure,
+    LoginFailure(String),
     UpdateEmail(String),
     UpdatePassword(String),
     DoLogin,
     NoOp,
+    ClearMessage,
 }
 
 impl Component for LoginPage {
@@ -42,6 +44,7 @@ impl Component for LoginPage {
             link,
             task: None,
             router,
+            message: html!{},
         }
     }
 
@@ -81,10 +84,21 @@ impl Component for LoginPage {
 
                 false
             }
-            Msg::LoginFailure => {
-                warn!("Login failure");
+            Msg::LoginFailure(error) => {
                 self.task = None;
-                // TODO: Display to user
+
+                self.message = html! {
+                    <article class="message is-danger">
+                        <div class="message-header">
+                            <p>{"Failed to login"}</p>
+                            <button class="delete" aria-label="delete" onclick=self.link.callback(|_| Msg::ClearMessage)></button>
+                        </div>
+                        <div class="message-body">
+                        {error}
+                        </div>
+                    </article>
+                };
+
                 true
             }
             Msg::DoLogin => {
@@ -103,11 +117,15 @@ impl Component for LoginPage {
                     if meta.status.is_success() {
                         Msg::LoginSuccess(result.unwrap())
                     } else {
-                        Msg::LoginFailure
+                        Msg::LoginFailure(result.unwrap())
                     }
                 })).expect("Failed to get fetch task"));
 
 
+                true
+            }
+            Msg::ClearMessage => {
+                self.message = html!{};
                 true
             }
             _ => false
@@ -122,6 +140,7 @@ impl Component for LoginPage {
     fn view(&self) -> Html {
         html! {
             <>
+                {self.message.clone()}
                 <label class="label" for="email">{"Email"}</label>
                 <input type="text"
                        value=self.state.email 

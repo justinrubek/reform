@@ -64,7 +64,7 @@ impl Component for FormItem {
                     <p>{format!("name: {}", self.props.form.name)}</p>
                 </div>
                 <div class="media-right">
-                    <button class="button" >{"edit"}</button>
+                    // <button class="button" >{"edit"}</button> // Currently no form editing
                 </div>
             </div>
         }

@@ -18,6 +18,7 @@ pub struct CreateSchema {
     link: ComponentLink<Self>,
     api_handler: Schema,
     task: Option<FetchTask>,
+    message: Html,
 }
 
 #[derive(Default)]
@@ -32,7 +33,8 @@ pub enum Msg {
     AddField,
     PostSchema,
     CreateSchemaSuccess(SchemaInfo),
-    CreateSchemaFailure,
+    CreateSchemaFailure(Error),
+    ClearMessage,
 }
 
 impl Component for CreateSchema {
@@ -45,6 +47,7 @@ impl Component for CreateSchema {
             link,
             api_handler: auth_agent::Schema::new(),
             task: None,
+            message: html!{},
         }
     }
 
@@ -63,13 +66,33 @@ impl Component for CreateSchema {
                 true
             }
             Msg::CreateSchemaSuccess(schema_info) => {
-                info!("Create schema success: {},{}", schema_info.id, schema_info.data);
                 self.task = None;
-                false
+                self.message = html! {
+                    <article class="message is-primary">
+                        <div class="message-header">
+                            <p>{"Created schema successfully"}</p>
+                            <button class="delete" aria-label="delete" onclick=self.link.callback(|_| Msg::ClearMessage)></button>
+                        </div>
+                        <div class="message-body">
+                        {format!("Created schema {} with id {}", schema_info.name, schema_info.id)}
+                        </div>
+                    </article>
+                };
+                true
             }
-            Msg::CreateSchemaFailure => {
-                warn!("Failure to create schema");
+            Msg::CreateSchemaFailure(error) => {
                 self.task = None;
+                self.message = html! {
+                    <article class="message is-danger">
+                        <div class="message-header">
+                            <p>{"Failed to create schema"}</p>
+                            <button class="delete" aria-label="delete" onclick=self.link.callback(|_| Msg::ClearMessage)></button>
+                        </div>
+                        <div class="message-body">
+                        {error}
+                        </div>
+                    </article>
+                };
                 true
             }
             Msg::PostSchema => {
@@ -95,20 +118,13 @@ impl Component for CreateSchema {
                     props.insert("type".to_string(), json!(type_to_string(field.ftype).to_string()));
 
                     properties.insert(field.name.clone(), serde_json::Value::Object(props));
-                    // properties.insert(field.name.clone(), format!(r#"{{ "type": "{}" }}"#, type_to_string(field.ftype)));
                 }
 
-                // Check to see why properties is serialized with quotes around it
-                debug!("{:?} properties", properties);
-                
                 let schema_data = json!({
                     "type": "object",
                     "required": required,
                     "properties": properties
                 });
-
-                // Check to see why properties is serialized with quotes around it
-                debug!("{:?} schema_data", schema_data);
 
                 let schema_info = SchemaCreateInfo {
                     data: schema_data,
@@ -120,11 +136,14 @@ impl Component for CreateSchema {
                     if response.is_ok() {
                         Msg::CreateSchemaSuccess(response.unwrap())
                     } else {
-                        warn!("{:?}", response.err());
-                        Msg::CreateSchemaFailure
+                        Msg::CreateSchemaFailure(response.err().unwrap())
                     }
                 })));
 
+                true
+            }
+            Msg::ClearMessage => {
+                self.message = html!{};
                 true
             }
             _ => false
@@ -146,6 +165,7 @@ impl Component for CreateSchema {
 
         html! {
             <>
+                {self.message.clone()}
                 <h1 class="title">{"Schema creator"}</h1>
                 <div class="container">
                     <label class="label" for="schema_name">{"Name"}</label>

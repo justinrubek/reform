@@ -151,12 +151,8 @@ impl Component for MappingItem {
                 let fields = schema.properties.iter().map(|(name, properties)| {
                     if let serde_json::Value::Object(map) = properties {
 
-                        // Extract the field name and type to as a prop
-                        let mut ftype = serde_json::to_string(map.get("type").expect(&format!("No type provided for schema field {}", name))).expect("Failed to convert type to string");
-                        // Remove the leading and trailing quotes from the type (serde deserializes
-                        // it with the quotes since it is a string)
-                        ftype.pop();
-                        ftype.remove(0);
+                        // Extract the field name and type to pass as a prop
+                        let mut ftype = map.get("type").expect(&format!("No type provided for schema field {}", name)).as_str().expect("Failed to get type as str");
 
                         html! {
                             <tr>
