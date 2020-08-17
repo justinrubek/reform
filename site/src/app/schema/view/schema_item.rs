@@ -2,6 +2,9 @@ use yew::format::Json;
 use yew::prelude::*;
 use yew::services::fetch::{FetchService, FetchTask, Response, Request};
 
+use yew_router::{route::Route, router::Router, service::RouteService, prelude::*};
+
+use crate::app::AppRoute;
 use crate::auth_agent;
 use crate::error::Error;
 use crate::types::{EntryInfo, SchemaInfo};
@@ -115,7 +118,7 @@ impl Component for SchemaItem {
                     {entries}
                 </div>
                 <div class="media-right">
-                    <button class="button" onclick=self.link.callback(|_| Msg::SendFetch)>{"Get entries"}</button>
+                    <RouterButton<AppRoute> route=AppRoute::ViewEntries(self.props.schema.id) classes="button">{"view entries"}</RouterButton<AppRoute>>
                 </div>
             </div>
         }

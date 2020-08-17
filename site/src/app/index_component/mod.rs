@@ -42,9 +42,15 @@ impl Component for IndexComponent {
     fn view(&self) -> Html {
         html! {
             <>
-                <h2>{"Index"}</h2>
-                <RouterButton<AppRoute> route=AppRoute::Login classes="button">{"Log in"}</RouterButton<AppRoute>>
-                <RouterButton<AppRoute> route=AppRoute::Signup classes="button">{"Create an account"}</RouterButton<AppRoute>>
+                <h1 class="title">{"Welcome to reform"}</h1>
+                <article class="media">
+                    <div class="media-content">
+                        <div class="content">
+                        <RouterButton<AppRoute> route=AppRoute::Login classes="button">{"Log in"}</RouterButton<AppRoute>>
+                        <RouterButton<AppRoute> route=AppRoute::Signup classes="button">{"Create an account"}</RouterButton<AppRoute>>
+                        </div>
+                    </div>
+                </article>
             </>
 
         }

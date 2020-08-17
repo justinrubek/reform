@@ -23,12 +23,17 @@ mod form;
 use form::create::CreateForm;
 use form::view::ViewForms;
 
+mod entry;
+use entry::view::ViewEntries;
+
 #[derive(Clone, Debug, Switch)]
 pub enum AppRoute {
     #[to = "/login"]
     Login,
     #[to = "/signup"]
     Signup,
+    #[to = "/dashboard/view/schema/{schema_id}/entries"]
+    ViewEntries(u32),
     #[to = "/dashboard/create/form"]
     CreateForm,
     #[to = "/dashboard/create/schema"]
@@ -76,6 +81,7 @@ impl Component for App {
 
     fn view(&self) -> Html {
         html! {
+            <section class="section">
             <div class="container">
                 <Router<AppRoute, ()>
                     render = Router::render(|switch: AppRoute| {
@@ -86,10 +92,12 @@ impl Component for App {
                             AppRoute::CreateForm => html!{<CreateForm />},
                             AppRoute::CreateSchema => html!{<CreateSchema />},
                             AppRoute::Dashboard => html!{<DashboardComponent />},
+                            AppRoute::ViewEntries(schema_id) => html!{<ViewEntries schema_id=schema_id />},
                         }
                     })
                 />
             </div>
+            </section>
         }
     }
 }
