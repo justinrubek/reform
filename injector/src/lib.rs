@@ -1,4 +1,5 @@
 #![recursion_limit="256"]
+extern crate anyhow;
 
 extern crate chrono;
 
@@ -25,11 +26,15 @@ extern crate stdweb;
 
 extern crate web_logger;
 
+// mod components;
+
 mod form;
 use form::Props;
 
 use std::convert::TryInto;
-use stdweb::web::{document, Element, IElement, IParentNode, Node};
+// use stdweb::web::{document, Element, IElement, IParentNode, Node};
+use yew::web_sys::Element;
+use yew::utils::document;
 use wasm_bindgen::prelude::*;
 
 use crate::form::Form;
@@ -46,10 +51,15 @@ pub fn inject_forms() -> Result<(), JsValue> {
 
     // Retrieve properties to pass the field
     let form_url = element.get_attribute("data-form").unwrap();
-    info!("Form URL: {}", form_url);
+    let success_message_title = element.get_attribute("data-success-message-title")
+        .unwrap_or("Submission success!".to_string());
+    let success_message_body = element.get_attribute("data-success-message-body")
+        .unwrap_or("Thank you for your submission. It has been received.".to_string());
 
     let form_props = form::Props {
-        form_url: form_url,
+        form_url,
+        success_message_title,
+        success_message_body,
     };
     app.mount_with_props(element, form_props);
     

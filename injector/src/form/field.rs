@@ -1,8 +1,11 @@
 use failure::Error;
 
-use yew::components::Select;
 use yew::html::onchange::Event;
 use yew::prelude::*;
+
+// TODO: This is also supplied by the site crate. The provided one on up to date yew requires
+// web_sys which we do not support here
+use yew_components::Select;
 
 #[derive(Clone, PartialEq, Deserialize)]
 pub enum Type {
@@ -27,6 +30,7 @@ pub struct Field {
     link: ComponentLink<Self>,
     state: State,
     onchange: Callback<serde_json::Value>,
+    props: Props,
 }
 
 struct State {
@@ -42,11 +46,8 @@ pub enum Msg {
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
-    #[props(required)]
     pub field: FormField,
-    #[props(required)]
     pub onchange: Callback<serde_json::Value>,
-    #[props(required)]
     pub value: serde_json::Value,
 }
 
@@ -56,14 +57,15 @@ impl Component for Field {
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         let state = State { 
-            field: props.field,
-            value: props.value,
+            field: props.field.clone(),
+            value: props.value.clone(),
         };
 
         Field {
             link,
             state,
-            onchange: props.onchange,
+            onchange: props.onchange.clone(),
+            props: props,
         }
     }
 
@@ -78,6 +80,15 @@ impl Component for Field {
                 true
             }
             _ => true,
+        }
+    }
+
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        if self.props != props {
+            self.props = props;
+            true
+        } else {
+            false
         }
     }
 
@@ -128,7 +139,7 @@ impl Component for Field {
                 let options = self.state.field.data.as_ref().unwrap();
 
                 html!{
-                    <Select<String> options=options onchange=self.link.callback(|v| Msg::UpdateField(json!(v))) />
+                    <Select<String> options=options on_change=self.link.callback(|v| Msg::UpdateField(json!(v))) />
                 }
             }
         };

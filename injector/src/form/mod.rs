@@ -1,4 +1,4 @@
-use failure::Error;
+use anyhow::Error;
 
 use std::collections::HashMap;
 
@@ -27,8 +27,10 @@ pub struct Form {
     link: ComponentLink<Self>,
     state: State,
     task: Option<FetchTask>,
-    fetch: FetchService,
     submit_tasks: Vec<FetchTask>,
+    submit_completion: Vec<bool>,
+    message: Html,
+    props: Props,
 }
 
 #[derive(Debug)]
@@ -50,16 +52,21 @@ struct State {
 
 pub enum Msg {
     GetFormSuccess(FormInfo),
-    GetFormFailure,
+    GetFormFailure(String),
     UpdateField(usize, serde_json::Value),
     Submit,
-    SubmitSuccess,
-    SubmitFailure,
+    SubmitSuccess(usize),
+    SubmitFailure(String),
+    ClearMessage,
 }
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
     pub form_url: String,
+    #[prop_or("Submission success!".to_string())]
+    pub success_message_title: String,
+    #[prop_or("Thank you for your submission. It has been received.".to_string())]
+    pub success_message_body: String,
 }
 
 impl Component for Form {
@@ -68,17 +75,16 @@ impl Component for Form {
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         // Initiate request to retrieve form
-        let mut fetch = FetchService::new();
-        let request = Request::get(props.form_url).body(Nothing).expect("Failed to build request for form");
-        let task = fetch.fetch(request, link.callback(|response: Response<Result<String, failure::Error>>| {
+        let request = Request::get(props.form_url.clone()).body(Nothing).expect("Failed to build request for form");
+        let task = FetchService::fetch(request, link.callback(|response: Response<Result<String, anyhow::Error>>| {
             if response.status().is_success() {
                 let body = response.body().as_ref().unwrap();
                 let form_info: FormInfo = serde_json::from_str(&body).expect("failed to deserialize form");
                 Msg::GetFormSuccess(form_info)
             } else {
-                Msg::GetFormFailure
+                Msg::GetFormFailure(format!("{}", response.body().as_ref().err().unwrap()))
             }
-        }));
+        })).expect("Failed to fetch schema");
 
         let state = State { 
             form: None,
@@ -89,8 +95,10 @@ impl Component for Form {
             link,
             state,
             task: Some(task),
-            fetch: fetch,
             submit_tasks: Vec::new(),
+            submit_completion: Vec::new(),
+            message: html!{},
+            props,
         }
     }
 
@@ -119,7 +127,17 @@ impl Component for Form {
                 info!("form get success");
                 true
             }
-            Msg::GetFormFailure => {
+            Msg::GetFormFailure(error) => {
+                self.message = html! {
+                    <article class="message is-danger">
+                        <div class="message-header">
+                            <p>{"Failed to load form"}</p>
+                        </div>
+                        <div class="message-body">
+                        {error}
+                        </div>
+                    </article>
+                };
                 true
             }
             Msg::UpdateField(index, data) => {
@@ -133,9 +151,8 @@ impl Component for Form {
                     data: serde_json::Value
                 }
 
-                let mut fetch = FetchService::new();
                 let mappings = self.state.form.clone().unwrap().mappings.clone();
-                for mapping in &mappings {
+                for (i, mapping) in mappings.iter().enumerate() {
                     // Retrieve the values to be filled into the schema slots
                     let mut fields: HashMap<String, serde_json::Value> = HashMap::new();
                     for (from, to) in &mapping.field_mappings {
@@ -165,30 +182,72 @@ impl Component for Form {
                     let request = Request::post("/api/entries")
                         .header("Content-Type", "application/json")
                         .body(Json(&body)).expect("Failed to build request for form submission");
-                    let task = fetch.fetch(request, self.link.callback(|response: Response<Result<String, failure::Error>>| {
+                    let task = FetchService::fetch(request, self.link.callback(move |response: Response<Result<String, anyhow::Error>>| {
                         if response.status().is_success() {
-                            Msg::SubmitSuccess
+                            info!("Success!");
+                            Msg::SubmitSuccess(i)
                         } else {
-                            Msg::SubmitFailure
+                            info!("Failure!");
+                            Msg::SubmitFailure(format!("{}", response.body().as_ref().err().unwrap()))
                         }
-                    }));
+                    })).expect("Failed to send entry request");
 
                     self.submit_tasks.push(task);
-
+                    self.submit_completion.push(false);
                 }
                 true
             }
-            Msg::SubmitSuccess => {
-                info!("Successfully submit form");
-                self.submit_tasks.clear();
+            Msg::SubmitSuccess(i) => {
+                self.message = html! {
+                    <article class="message is-primary">
+                        <div class="message-header">
+                            <p>{self.props.success_message_title.clone()}</p>
+                            <button class="delete" aria-label="delete" onclick=self.link.callback(|_| Msg::ClearMessage)></button>
+                        </div>
+                        <div class="message-body">
+                        {self.props.success_message_body.clone()}
+                        </div>
+                    </article>
+                };
+                // Mark this task as completed
+                self.submit_completion[i] = true;
+                // If all tasks are completed, clear the tasks
+                if self.submit_completion.iter().all(|done| *done) {
+                    self.submit_tasks.clear();
+                    self.submit_completion.clear();
+                }
                 true
             }
-            Msg::SubmitFailure => {
-                info!("Failed to submit form");
+            Msg::SubmitFailure(error) => {
+                self.message = html! {
+                    <article class="message is-danger">
+                        <div class="message-header">
+                            <p>{"Failed to submit form entry"}</p>
+                            <button class="delete" aria-label="delete" onclick=self.link.callback(|_| Msg::ClearMessage)></button>
+                        </div>
+                        <div class="message-body">
+                        {error}
+                        </div>
+                    </article>
+                };
                 self.submit_tasks.clear();
+                self.submit_completion.clear();
+                true
+            }
+            Msg::ClearMessage => {
+                self.message = html!{};
                 true
             }
             _ => true
+        }
+    }
+
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        if self.props != props {
+            self.props = props;
+            true
+        } else {
+            false
         }
     }
 
@@ -216,6 +275,7 @@ impl Component for Form {
 
         html! {
             <div>
+                {self.message.clone()}
                 <div>
                     {fields}
                 </div>
