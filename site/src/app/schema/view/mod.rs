@@ -1,8 +1,8 @@
-use yew::format::Json;
+
 use yew::prelude::*;
 use yew::services::fetch::{FetchService, FetchTask, Response, Request};
 
-use crate::auth_agent;
+use crate::api;
 use crate::error::Error;
 use crate::types::SchemaInfo;
 
@@ -13,7 +13,7 @@ pub mod entry_item;
 
 pub struct ViewSchemas {
     state: SchemaState,
-    fetch: auth_agent::Schema,
+    fetch: api::Schema,
     link: ComponentLink<Self>,
     task: Option<FetchTask>,
 }
@@ -34,7 +34,7 @@ impl Component for ViewSchemas {
 
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         // Attempt to fetch schemas
-        let mut fetch = auth_agent::Schema::new();
+        let mut fetch = api::Schema::new();
         let task = fetch.get_all(link.callback(|response: Result<Vec<SchemaInfo>, Error>| {
             match response {
                 Ok(list) => Msg::FetchSuccess(list),
@@ -44,7 +44,7 @@ impl Component for ViewSchemas {
 
         ViewSchemas { 
             state: Default::default(),
-            fetch: fetch,
+            fetch,
             link,
             task: Some(task),
         }
@@ -69,7 +69,7 @@ impl Component for ViewSchemas {
         }
     }
 
-    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
         false
     }
 

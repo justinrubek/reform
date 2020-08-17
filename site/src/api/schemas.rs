@@ -1,20 +1,20 @@
-use crate::auth_agent::{Requests, limit};
+use super::{Requests};
 use crate::error::Error;
 use crate::types::*;
 
 use yew::callback::Callback;
-use yew::format::{Json, Nothing, Text};
+
 use yew::services::fetch::{FetchService, FetchTask, Request, Response};
-use yew::services::storage::{Area, StorageService};
+
 
 #[derive(Default, Debug)]
-pub struct Entry {
+pub struct Schema {
     requests: Requests,
 }
 
-const API_KEY: &'static str = "entries";
+pub const API_KEY: &str = "schemas";
 
-impl Entry {
+impl Schema {
     pub fn new() -> Self {
         Self {
             requests: Requests::new(),
@@ -24,36 +24,35 @@ impl Entry {
     pub fn get(
         &mut self,
         id: u32,
-        callback: Callback<Result<EntryInfoWrapper, Error>>,
+        callback: Callback<Result<SchemaInfo, Error>>,
     ) -> FetchTask {
         self.requests
-            .get::<EntryInfoWrapper>(
+            .get::<SchemaInfo>(
                 format!("/{}/{}", API_KEY, id), 
                 callback
             )
     }
 
-    pub fn get_by_schema_id(
+    pub fn get_all(
         &mut self,
-        id: u32,
-        callback: Callback<Result<Vec<EntryInfo>, Error>>,
+        callback: Callback<Result<Vec<SchemaInfo>, Error>>,
     ) -> FetchTask {
         self.requests
-            .get::<Vec<EntryInfo>>(
-                format!("/{}/{}/entries", crate::auth_agent::schemas::API_KEY, id), 
+            .get::<Vec<SchemaInfo>>(
+                format!("/{}", API_KEY), 
                 callback
             )
     }
 
     pub fn create(
         &mut self,
-        entry: EntryCreateInfoWrapper,
-        callback: Callback<Result<EntryInfoWrapper, Error>>,
+        schema: SchemaCreateInfo,
+        callback: Callback<Result<SchemaInfo, Error>>,
     ) -> FetchTask {
         self.requests
-            .post::<EntryCreateInfoWrapper, EntryInfoWrapper>(
+            .post::<SchemaCreateInfo, SchemaInfo>(
                 format!("/{}", API_KEY),
-                entry,
+                schema,
                 callback,
             )
     }

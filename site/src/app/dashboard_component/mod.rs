@@ -1,7 +1,7 @@
 use yew::prelude::*;
-use yew_router::{route::Route, router::Router, service::RouteService, prelude::*};
+use yew_router::{prelude::*};
 
-use crate::auth_agent::{is_authenticated, set_token};
+
 use crate::app::form::view::ViewForms;
 use crate::app::schema::view::ViewSchemas;
 
@@ -22,7 +22,7 @@ impl Component for DashboardComponent {
     type Message = Msg;
     type Properties = ();
 
-    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+    fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
         let state = State { 
         };
 
@@ -32,11 +32,11 @@ impl Component for DashboardComponent {
         }
     }
 
-    fn update(&mut self, msg: Self::Message) -> ShouldRender {
+    fn update(&mut self, _msg: Self::Message) -> ShouldRender {
         false
     }
 
-    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
         false
     }
 

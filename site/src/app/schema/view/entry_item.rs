@@ -1,9 +1,9 @@
-use yew::format::Json;
-use yew::prelude::*;
-use yew::services::fetch::{FetchService, FetchTask, Response, Request};
 
-use crate::auth_agent;
-use crate::error::Error;
+use yew::prelude::*;
+
+
+
+
 use crate::types::EntryInfo;
 
 
@@ -40,7 +40,7 @@ impl Component for EntryItem {
         }
     }
 
-    fn update(&mut self, msg: Self::Message) -> ShouldRender {
+    fn update(&mut self, _msg: Self::Message) -> ShouldRender {
         true
     }
 

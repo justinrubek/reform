@@ -32,7 +32,7 @@ extern crate stdweb;
 
 extern crate web_logger;
 
-pub mod auth_agent;
+pub mod api;
 pub mod error;
 pub mod types;
 mod app;

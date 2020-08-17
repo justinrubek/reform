@@ -26,15 +26,14 @@ extern crate stdweb;
 
 extern crate web_logger;
 
-// mod components;
-
 mod form;
 use form::Props;
 
 use std::convert::TryInto;
-// use stdweb::web::{document, Element, IElement, IParentNode, Node};
+
 use yew::web_sys::Element;
 use yew::utils::document;
+
 use wasm_bindgen::prelude::*;
 
 use crate::form::Form;

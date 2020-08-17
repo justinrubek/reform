@@ -1,20 +1,20 @@
-use crate::auth_agent::{Requests, limit};
+use super::{Requests};
 use crate::error::Error;
 use crate::types::*;
 
 use yew::callback::Callback;
-use yew::format::{Json, Nothing, Text};
+
 use yew::services::fetch::{FetchService, FetchTask, Request, Response};
-use yew::services::storage::{Area, StorageService};
+
 
 #[derive(Default, Debug)]
-pub struct Form {
+pub struct Entry {
     requests: Requests,
 }
 
-pub const API_KEY: &'static str = "forms";
+const API_KEY: &str = "entries";
 
-impl Form {
+impl Entry {
     pub fn new() -> Self {
         Self {
             requests: Requests::new(),
@@ -24,35 +24,36 @@ impl Form {
     pub fn get(
         &mut self,
         id: u32,
-        callback: Callback<Result<FormInfo, Error>>,
+        callback: Callback<Result<EntryInfoWrapper, Error>>,
     ) -> FetchTask {
         self.requests
-            .get::<FormInfo>(
+            .get::<EntryInfoWrapper>(
                 format!("/{}/{}", API_KEY, id), 
                 callback
             )
     }
 
-    pub fn get_all(
+    pub fn get_by_schema_id(
         &mut self,
-        callback: Callback<Result<Vec<FormInfo>, Error>>,
+        id: u32,
+        callback: Callback<Result<Vec<EntryInfo>, Error>>,
     ) -> FetchTask {
         self.requests
-            .get::<Vec<FormInfo>>(
-                format!("/{}", API_KEY), 
+            .get::<Vec<EntryInfo>>(
+                format!("/{}/{}/entries", crate::api::schemas::API_KEY, id), 
                 callback
             )
     }
 
     pub fn create(
         &mut self,
-        form: FormCreateInfo,
-        callback: Callback<Result<FormInfo, Error>>,
+        entry: EntryCreateInfoWrapper,
+        callback: Callback<Result<EntryInfoWrapper, Error>>,
     ) -> FetchTask {
         self.requests
-            .post::<FormCreateInfo, FormInfo>(
+            .post::<EntryCreateInfoWrapper, EntryInfoWrapper>(
                 format!("/{}", API_KEY),
-                form,
+                entry,
                 callback,
             )
     }

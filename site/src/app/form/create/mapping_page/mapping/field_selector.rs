@@ -1,12 +1,12 @@
-use std::collections::HashMap;
+
 
 use stdweb::traits::{IEvent, IDragEvent};
 
-use yew::format::Json;
-use yew::prelude::*;
-use yew::services::fetch::{FetchService, FetchTask, Response, Request};
 
-use crate::components::Select;
+use yew::prelude::*;
+
+
+
 // Allow for text->string and choice->string
 fn check_compatible_types(from: &str, to: &str) -> bool {
     // If they're the same, then they're compatible

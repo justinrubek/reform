@@ -1,4 +1,4 @@
-use anyhow::Error;
+
 
 use yew::format::Json;
 use yew::prelude::*;
@@ -6,7 +6,7 @@ use yew::services::fetch::{FetchService, FetchTask, Response, Request};
 
 use yew_router::{agent::RouteRequest, prelude::*};
 
-use crate::auth_agent::set_token;
+use crate::api::set_token;
 
 pub struct LoginPage {
     state: LoginData,
@@ -132,7 +132,7 @@ impl Component for LoginPage {
         }
     }
 
-    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
         false
     }
 

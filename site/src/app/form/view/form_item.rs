@@ -1,9 +1,9 @@
-use yew::format::Json;
-use yew::prelude::*;
-use yew::services::fetch::{FetchService, FetchTask, Response, Request};
 
-use crate::auth_agent;
-use crate::error::Error;
+use yew::prelude::*;
+
+
+
+
 use crate::types::FormInfo;
 
 pub struct FormItem {
@@ -39,10 +39,8 @@ impl Component for FormItem {
         }
     }
 
-    fn update(&mut self, msg: Self::Message) -> ShouldRender {
-        match msg {
-            _ => true,
-        }
+    fn update(&mut self, _msg: Self::Message) -> ShouldRender {
+        true
     }
 
     fn change(&mut self, props: Self::Properties) -> ShouldRender {

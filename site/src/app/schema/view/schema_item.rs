@@ -1,11 +1,11 @@
-use yew::format::Json;
+
 use yew::prelude::*;
 use yew::services::fetch::{FetchService, FetchTask, Response, Request};
 
-use yew_router::{route::Route, router::Router, service::RouteService, prelude::*};
+use yew_router::{prelude::*};
 
 use crate::app::AppRoute;
-use crate::auth_agent;
+use crate::api;
 use crate::error::Error;
 use crate::types::{EntryInfo, SchemaInfo};
 
@@ -22,7 +22,7 @@ use super::entry_item::EntryItem;
 pub struct SchemaItem {
     state: State,
     link: ComponentLink<Self>,
-    fetch: auth_agent::Entry,
+    fetch: api::Entry,
     task: Option<FetchTask>,
     props: Props,
 }
@@ -56,7 +56,7 @@ impl Component for SchemaItem {
         SchemaItem { 
             state,
             link,
-            fetch: auth_agent::Entry::new(),
+            fetch: api::Entry::new(),
             task: None,
             props,
         }

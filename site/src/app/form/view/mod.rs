@@ -1,17 +1,17 @@
-use yew::format::Json;
+
 use yew::prelude::*;
 use yew::services::fetch::{FetchService, FetchTask, Response, Request};
 
-use crate::auth_agent;
+use crate::api;
 use crate::error::Error;
-use crate::types::{FormInfo, FormList};
+use crate::types::{FormInfo};
 
 mod form_item;
 use form_item::FormItem;
 
 pub struct ViewForms {
     state: State,
-    fetch: auth_agent::Form,
+    fetch: api::Form,
     link: ComponentLink<Self>,
     task: Option<FetchTask>,
 }
@@ -33,7 +33,7 @@ impl Component for ViewForms {
 
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         // Attempt to fetch forms
-        let mut fetch = auth_agent::Form::new();
+        let mut fetch = api::Form::new();
         let task = fetch.get_all(link.callback(|response: Result<Vec<FormInfo>, Error>| {
             match response {
                 Ok(list) => Msg::FetchSuccess(list),
@@ -43,7 +43,7 @@ impl Component for ViewForms {
 
         ViewForms { 
             state: Default::default(),
-            fetch: fetch,
+            fetch,
             link,
             task: Some(task),
         }

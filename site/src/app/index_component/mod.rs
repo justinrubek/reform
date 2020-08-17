@@ -1,7 +1,7 @@
 use yew::prelude::*;
-use yew_router::{route::Route, service::RouteService, prelude::*};
+use yew_router::{prelude::*};
 
-use crate::auth_agent::{is_authenticated, set_token};
+
 
 use super::AppRoute;
 
@@ -31,11 +31,11 @@ impl Component for IndexComponent {
         }
     }
 
-    fn update(&mut self, msg: Self::Message) -> ShouldRender {
+    fn update(&mut self, _msg: Self::Message) -> ShouldRender {
         false
     }
 
-    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
         false
     }
 

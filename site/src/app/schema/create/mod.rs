@@ -1,11 +1,11 @@
 use std::collections::HashMap;
 
-use yew::format::Json;
+
 use yew::prelude::*;
 use yew::services::fetch::{FetchService, FetchTask, Response, Request};
 
-use crate::auth_agent;
-use crate::auth_agent::Schema;
+use crate::api;
+use crate::api::Schema;
 use crate::error::Error;
 use crate::types::{SchemaCreateInfo, SchemaInfo};
 
@@ -45,7 +45,7 @@ impl Component for CreateSchema {
         CreateSchema { 
             state: Default::default(),
             link,
-            api_handler: auth_agent::Schema::new(),
+            api_handler: api::Schema::new(),
             task: None,
             message: html!{},
         }

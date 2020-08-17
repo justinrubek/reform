@@ -1,7 +1,7 @@
-use yew::format::Json;
+
 use yew::prelude::*;
 
-use crate::components::Select;
+
 
 struct State {
     choices: Vec<String>,
@@ -35,7 +35,7 @@ impl Component for ChoiceField {
         };
 
         ChoiceField { 
-            state: state,
+            state,
             link,
             props
         }

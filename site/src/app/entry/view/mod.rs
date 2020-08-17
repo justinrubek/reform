@@ -1,8 +1,8 @@
-use yew::format::Json;
+
 use yew::prelude::*;
 use yew::services::fetch::{FetchService, FetchTask, Response, Request};
 
-use crate::auth_agent;
+use crate::api;
 use crate::error::Error;
 use crate::types::EntryInfo;
 
@@ -11,7 +11,7 @@ use entry_item::EntryItem;
 
 pub struct ViewEntries {
     state: State,
-    fetch: auth_agent::Entry,
+    fetch: api::Entry,
     link: ComponentLink<Self>,
     task: Option<FetchTask>,
     props: Props,
@@ -38,7 +38,7 @@ impl Component for ViewEntries {
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         // Attempt to fetch entries
-        let mut fetch = auth_agent::Entry::new();
+        let mut fetch = api::Entry::new();
         let task = fetch.get_by_schema_id(props.schema_id, link.callback(|response: Result<Vec<EntryInfo>, Error>| {
             match response {
                 Ok(list) => Msg::FetchSuccess(list),
@@ -48,7 +48,7 @@ impl Component for ViewEntries {
 
         ViewEntries { 
             state: Default::default(),
-            fetch: fetch,
+            fetch,
             link,
             task: Some(task),
             props,
@@ -62,7 +62,7 @@ impl Component for ViewEntries {
                 self.task = None;
                 true
             }
-            Msg::FetchFailure(error) => {
+            Msg::FetchFailure(_error) => {
                 self.task = None;
                 // TODO: Respond to this
                 true

@@ -1,6 +1,6 @@
-use yew::format::Json;
+
 use yew::prelude::*;
-use yew::services::fetch::{FetchService, FetchTask, Response, Request};
+
 
 use crate::components::Select;
 
@@ -63,7 +63,7 @@ impl Component for FieldItem {
         };
 
         FieldItem { 
-            state: state,
+            state,
             link,
             props,
         }

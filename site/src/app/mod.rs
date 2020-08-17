@@ -16,12 +16,12 @@ mod login_page;
 use login_page::LoginPage;
 
 mod schema;
-use schema::view::ViewSchemas;
+
 use schema::create::CreateSchema;
 
 mod form;
 use form::create::CreateForm;
-use form::view::ViewForms;
+
 
 mod entry;
 use entry::view::ViewEntries;
@@ -69,13 +69,11 @@ impl Component for App {
         }
     }
 
-    fn update(&mut self, msg: Self::Message) -> ShouldRender {
-        match msg {
-            _ => false
-        }
+    fn update(&mut self, _msg: Self::Message) -> ShouldRender {
+        false
     }
 
-    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
         false
     }
 

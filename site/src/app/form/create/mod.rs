@@ -1,8 +1,8 @@
-use yew::format::Json;
+
 use yew::prelude::*;
 use yew::services::fetch::{FetchService, FetchTask, Response, Request};
 
-use crate::auth_agent;
+use crate::api;
 use crate::error::Error;
 use crate::types::{FormInfo, FormCreateInfo};
 
@@ -16,7 +16,7 @@ use mapping_page::Mapping;
 pub struct CreateForm {
     state: State,
     link: ComponentLink<Self>,
-    api_handler: auth_agent::Form,
+    api_handler: api::Form,
     task: Option<FetchTask>,
     message: Html,
 }
@@ -47,7 +47,7 @@ impl Component for CreateForm {
         CreateForm { 
             state: Default::default(),
             link,
-            api_handler: auth_agent::Form::new(),
+            api_handler: api::Form::new(),
             task: None,
             message: html!{},
         }
@@ -106,8 +106,8 @@ impl Component for CreateForm {
 
                 let form_info = FormCreateInfo {
                     name: self.state.name.clone(),
-                    fields: fields,
-                    mappings: mappings,
+                    fields,
+                    mappings,
                 };
 
                 self.task = Some(self.api_handler.create(form_info, self.link.callback(move |response: Result<FormInfo, Error>| {
@@ -132,7 +132,7 @@ impl Component for CreateForm {
         }
     }
 
-    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
         false
     }
 

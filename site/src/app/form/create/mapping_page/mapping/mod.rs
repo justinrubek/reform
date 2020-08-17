@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 
-use yew::format::Json;
+
 use yew::prelude::*;
 use yew::services::fetch::{FetchService, FetchTask, Response, Request};
 
-use crate::auth_agent;
+use crate::api;
 use crate::components::Select;
 use crate::types::SchemaInfo;
 use crate::error::Error;
@@ -42,7 +42,7 @@ pub struct Props {
 pub struct MappingItem {
     state: State,
     link: ComponentLink<Self>,
-    fetch: auth_agent::Schema,
+    fetch: api::Schema,
     task: Option<FetchTask>,
     props: Props,
 }
@@ -67,7 +67,7 @@ impl Component for MappingItem {
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         // Attempt to fetch schemas
-        let mut fetch = auth_agent::Schema::new();
+        let mut fetch = api::Schema::new();
         let task = fetch.get_all(link.callback(|response: Result<Vec<SchemaInfo>, Error>| {
             match response {
                 Ok(list) => Msg::FetchSuccess(list),
@@ -82,9 +82,9 @@ impl Component for MappingItem {
         };
 
         MappingItem { 
-            state: state,
+            state,
             link,
-            fetch: fetch,
+            fetch,
             task: Some(task),
             props,
         }
@@ -152,7 +152,7 @@ impl Component for MappingItem {
                     if let serde_json::Value::Object(map) = properties {
 
                         // Extract the field name and type to pass as a prop
-                        let mut ftype = map.get("type").expect(&format!("No type provided for schema field {}", name)).as_str().expect("Failed to get type as str");
+                        let ftype = map.get("type").unwrap_or_else(|| panic!("No type provided for schema field {}", name)).as_str().expect("Failed to get type as str");
 
                         html! {
                             <tr>
