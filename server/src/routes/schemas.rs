@@ -27,8 +27,7 @@ pub fn post_schema(
     let data = extractor.extract("data", new_schema.data);
     let name = extractor.extract("name", new_schema.name);
 
-// TODO: Validate json schema here
-// What's keeping us from this is the nature of numbers to be stored as text
+    // TODO: Validate schema as valid JSON object and schema here
 
     extractor.check()?;
 
@@ -51,7 +50,6 @@ pub fn get_all_schemas(auth: Auth, conn: db::Conn, state: State<AppState>) -> Op
 
 #[get("/schemas/<id>/entries")]
 pub fn get_schema_entries(id: i32, auth: Auth, conn: db::Conn, state: State<AppState>) -> Option<JsonValue> {
-    println!("id {}", id);
     db::entries::find_by_schema_id(&conn, id).map(|entry| json!(entry))
 }
 
