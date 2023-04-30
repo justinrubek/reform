@@ -1,8 +1,6 @@
-
-
 use yew::format::Json;
 use yew::prelude::*;
-use yew::services::fetch::{FetchService, FetchTask, Response, Request};
+use yew::services::fetch::{FetchService, FetchTask, Request, Response};
 
 use yew_router::{agent::RouteRequest, prelude::*};
 
@@ -39,12 +37,12 @@ impl Component for LoginPage {
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         let router = RouteAgent::bridge(link.callback(|_| Msg::NoOp));
 
-        LoginPage { 
+        LoginPage {
             state: Default::default(),
             link,
             task: None,
             router,
-            message: html!{},
+            message: html! {},
         }
     }
 
@@ -66,16 +64,17 @@ impl Component for LoginPage {
                 #[derive(Deserialize)]
                 struct LoginResponseData {
                     email: String,
-                    token: String
+                    token: String,
                 }
                 #[derive(Deserialize)]
                 struct LoginResponse {
-                    user: LoginResponseData
+                    user: LoginResponseData,
                 }
 
-                let response: LoginResponse = serde_json::from_str(&data).expect("Login token format invalid");
+                let response: LoginResponse =
+                    serde_json::from_str(&data).expect("Login token format invalid");
 
-                // Store login token 
+                // Store login token
                 set_token(Some(response.user.token));
 
                 // Navigate to dashboard
@@ -111,24 +110,31 @@ impl Component for LoginPage {
                     .body(Json(&self.state))
                     .expect("Failed to build request");
 
-                self.task = Some(FetchService::fetch(request, self.link.callback(move |response: Response<Result<String, anyhow::Error>>| {
-                    debug!("Response received from {}", url);
-                    let (meta, result) = response.into_parts();
-                    if meta.status.is_success() {
-                        Msg::LoginSuccess(result.unwrap())
-                    } else {
-                        Msg::LoginFailure(result.unwrap())
-                    }
-                })).expect("Failed to get fetch task"));
-
+                self.task = Some(
+                    FetchService::fetch(
+                        request,
+                        self.link.callback(
+                            move |response: Response<Result<String, anyhow::Error>>| {
+                                debug!("Response received from {}", url);
+                                let (meta, result) = response.into_parts();
+                                if meta.status.is_success() {
+                                    Msg::LoginSuccess(result.unwrap())
+                                } else {
+                                    Msg::LoginFailure(result.unwrap())
+                                }
+                            },
+                        ),
+                    )
+                    .expect("Failed to get fetch task"),
+                );
 
                 true
             }
             Msg::ClearMessage => {
-                self.message = html!{};
+                self.message = html! {};
                 true
             }
-            _ => false
+            _ => false,
         }
     }
 
@@ -136,27 +142,26 @@ impl Component for LoginPage {
         false
     }
 
-
     fn view(&self) -> Html {
         html! {
             <>
                 {self.message.clone()}
                 <label class="label" for="email">{"Email"}</label>
                 <input type="text"
-                       value=self.state.email 
-                       name="email" 
+                       value=self.state.email
+                       name="email"
                        oninput=self.link.callback(|e: InputData| Msg::UpdateEmail(e.value))
                        class="input"
                        />
                 <label class="label" for="password">{"password"}</label>
                 <input type="password"
-                       value=self.state.password 
-                       name="password" 
+                       value=self.state.password
+                       name="password"
                        oninput=self.link.callback(|e: InputData| Msg::UpdatePassword(e.value))
                        class="input"
                        />
-                <button 
-                    onclick=self.link.callback(|_| Msg::DoLogin) 
+                <button
+                    onclick=self.link.callback(|_| Msg::DoLogin)
                     class="button"
                 >{"Log in"}</button>
             </>

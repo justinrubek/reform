@@ -22,7 +22,6 @@ use schema::create::CreateSchema;
 mod form;
 use form::create::CreateForm;
 
-
 mod entry;
 use entry::view::ViewEntries;
 
@@ -49,24 +48,18 @@ pub struct App {
     state: State,
 }
 
-struct State {
-}
+struct State {}
 
-pub enum Msg {
-}
+pub enum Msg {}
 
 impl Component for App {
     type Message = Msg;
     type Properties = ();
 
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
-        let state = State { 
-        };
+        let state = State {};
 
-        App {
-            link,
-            state,
-        }
+        App { link, state }
     }
 
     fn update(&mut self, _msg: Self::Message) -> ShouldRender {

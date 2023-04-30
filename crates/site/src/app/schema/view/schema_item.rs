@@ -1,11 +1,10 @@
-
 use yew::prelude::*;
-use yew::services::fetch::{FetchService, FetchTask, Response, Request};
+use yew::services::fetch::{FetchService, FetchTask, Request, Response};
 
-use yew_router::{prelude::*};
+use yew_router::prelude::*;
 
-use crate::app::AppRoute;
 use crate::api;
+use crate::app::AppRoute;
 use crate::error::Error;
 use crate::types::{EntryInfo, SchemaInfo};
 
@@ -42,7 +41,6 @@ pub struct Props {
     pub schema: SchemaInfo,
 }
 
-
 impl Component for SchemaItem {
     type Message = Msg;
     type Properties = Props;
@@ -53,7 +51,7 @@ impl Component for SchemaItem {
             entries: Default::default(),
         };
 
-        SchemaItem { 
+        SchemaItem {
             state,
             link,
             fetch: api::Entry::new(),
@@ -75,13 +73,14 @@ impl Component for SchemaItem {
                 true
             }
             Msg::SendFetch => {
-                let task = self.fetch.get_by_schema_id(self.props.schema.id,
-                    self.link.callback(|response: Result<Vec<EntryInfo>, Error>| {
-                        match response {
+                let task = self.fetch.get_by_schema_id(
+                    self.props.schema.id,
+                    self.link
+                        .callback(|response: Result<Vec<EntryInfo>, Error>| match response {
                             Ok(list) => Msg::FetchSuccess(list),
                             Err(err) => Msg::FetchFailure(err),
-                        }
-                }));
+                        }),
+                );
                 self.task = Some(task);
                 false
             }
@@ -100,13 +99,18 @@ impl Component for SchemaItem {
     }
 
     fn view(&self) -> Html {
-        let entries = self.state.entries.iter().map(|entry| {
-           html! { 
-               <div class="media">
-                   <EntryItem entry={entry.clone()} />
-               </div>
-           }
-        }).collect::<Html>();
+        let entries = self
+            .state
+            .entries
+            .iter()
+            .map(|entry| {
+                html! {
+                    <div class="media">
+                        <EntryItem entry={entry.clone()} />
+                    </div>
+                }
+            })
+            .collect::<Html>();
         html! {
             <div class="media">
                 <div class="media-left">

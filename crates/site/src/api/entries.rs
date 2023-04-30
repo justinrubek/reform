@@ -1,11 +1,10 @@
-use super::{Requests};
+use super::Requests;
 use crate::error::Error;
 use crate::types::*;
 
 use yew::callback::Callback;
 
 use yew::services::fetch::{FetchService, FetchTask, Request, Response};
-
 
 #[derive(Default, Debug)]
 pub struct Entry {
@@ -27,10 +26,7 @@ impl Entry {
         callback: Callback<Result<EntryInfoWrapper, Error>>,
     ) -> FetchTask {
         self.requests
-            .get::<EntryInfoWrapper>(
-                format!("/{}/{}", API_KEY, id), 
-                callback
-            )
+            .get::<EntryInfoWrapper>(format!("/{}/{}", API_KEY, id), callback)
     }
 
     pub fn get_by_schema_id(
@@ -38,11 +34,10 @@ impl Entry {
         id: u32,
         callback: Callback<Result<Vec<EntryInfo>, Error>>,
     ) -> FetchTask {
-        self.requests
-            .get::<Vec<EntryInfo>>(
-                format!("/{}/{}/entries", crate::api::schemas::API_KEY, id), 
-                callback
-            )
+        self.requests.get::<Vec<EntryInfo>>(
+            format!("/{}/{}/entries", crate::api::schemas::API_KEY, id),
+            callback,
+        )
     }
 
     pub fn create(

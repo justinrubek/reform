@@ -1,7 +1,4 @@
-
 use yew::prelude::*;
-
-
 
 struct State {
     choices: Vec<String>,
@@ -34,11 +31,7 @@ impl Component for ChoiceField {
             choices: Vec::new(),
         };
 
-        ChoiceField { 
-            state,
-            link,
-            props
-        }
+        ChoiceField { state, link, props }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
@@ -62,14 +55,14 @@ impl Component for ChoiceField {
                 self.link.send_message(Msg::OnChange);
                 true
             }
-            _ => false
+            _ => false,
         }
     }
 
     fn change(&mut self, props: Self::Properties) -> ShouldRender {
         if self.props != props {
             self.props = props;
-            true 
+            true
         } else {
             false
         }
@@ -97,4 +90,3 @@ impl Component for ChoiceField {
         }
     }
 }
-

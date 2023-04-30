@@ -1,13 +1,12 @@
 use std::collections::HashMap;
 
-
 use yew::prelude::*;
-use yew::services::fetch::{FetchService, FetchTask, Response, Request};
+use yew::services::fetch::{FetchService, FetchTask, Request, Response};
 
 use crate::api;
 use crate::components::Select;
-use crate::types::SchemaInfo;
 use crate::error::Error;
+use crate::types::SchemaInfo;
 
 mod field_selector;
 use field_selector::FieldSelector;
@@ -22,7 +21,7 @@ pub struct Mapping {
 struct State {
     mapping: Mapping,
     schemas: Vec<SchemaInfo>,
-    selected_schema: Option<SchemaInfo>
+    selected_schema: Option<SchemaInfo>,
 }
 
 pub enum Msg {
@@ -54,7 +53,6 @@ struct json_schema_form {
     required: serde_json::Value,
 }
 
-
 impl ToString for SchemaInfo {
     fn to_string(&self) -> String {
         format!("{}({})", self.name, self.id)
@@ -68,12 +66,13 @@ impl Component for MappingItem {
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         // Attempt to fetch schemas
         let mut fetch = api::Schema::new();
-        let task = fetch.get_all(link.callback(|response: Result<Vec<SchemaInfo>, Error>| {
-            match response {
-                Ok(list) => Msg::FetchSuccess(list),
-                Err(err) => Msg::FetchFailure(err),
-            }
-        }));
+        let task =
+            fetch.get_all(link.callback(
+                |response: Result<Vec<SchemaInfo>, Error>| match response {
+                    Ok(list) => Msg::FetchSuccess(list),
+                    Err(err) => Msg::FetchFailure(err),
+                },
+            ));
 
         let state = State {
             mapping: props.mapping.clone(),
@@ -81,7 +80,7 @@ impl Component for MappingItem {
             selected_schema: None,
         };
 
-        MappingItem { 
+        MappingItem {
             state,
             link,
             fetch,
@@ -121,11 +120,14 @@ impl Component for MappingItem {
                 true
             }
             Msg::UpdateMapping(to_field, from_field) => {
-                self.state.mapping.field_mappings.insert(to_field, from_field);
+                self.state
+                    .mapping
+                    .field_mappings
+                    .insert(to_field, from_field);
                 self.link.send_message(Msg::OnChange);
                 true
             }
-            _ => false
+            _ => false,
         }
     }
 
@@ -139,14 +141,15 @@ impl Component for MappingItem {
     }
 
     fn view(&self) -> Html {
-        let schema_selection = html! { 
+        let schema_selection = html! {
             <Select<SchemaInfo> options=&self.state.schemas onchange=self.link.callback(|schema| Msg::SelectSchema(schema)) />
         };
-        
+
         // Build a list of the fields in the schema
         let field_display = match &self.state.selected_schema {
             Some(schema_info) => {
-                let schema: json_schema_form = serde_json::from_value(schema_info.data.clone()).expect("schema has extra properties");
+                let schema: json_schema_form = serde_json::from_value(schema_info.data.clone())
+                    .expect("schema has extra properties");
 
                 let fields = schema.properties.iter().map(|(name, properties)| {
                     if let serde_json::Value::Object(map) = properties {
@@ -168,7 +171,7 @@ impl Component for MappingItem {
                     {fields}
                 }
             }
-            None => html! {}
+            None => html! {},
         };
 
         let field_entry = html! {

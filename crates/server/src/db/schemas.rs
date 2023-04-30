@@ -30,10 +30,7 @@ pub fn create(
     data: &serde_json::Value,
     name: &str,
 ) -> Result<Schema, SchemaCreationError> {
-    let new_schema = &NewSchema {
-        data,
-        name,
-    };
+    let new_schema = &NewSchema { data, name };
 
     diesel::insert_into(schemas::table)
         .values(new_schema)
@@ -58,13 +55,11 @@ pub fn find_all(conn: &PgConnection) -> Option<Vec<Schema>> {
 #[table_name = "schemas"]
 pub struct UpdateSchemaData {
     data: Option<serde_json::Value>,
-    name: Option<String>
+    name: Option<String>,
 }
 
 pub fn update(conn: &PgConnection, id: i32, data: &UpdateSchemaData) -> Option<Schema> {
-    let data = &UpdateSchemaData {
-        ..data.clone()
-    };
+    let data = &UpdateSchemaData { ..data.clone() };
     diesel::update(schemas::table.find(id))
         .set(data)
         .get_result(conn)

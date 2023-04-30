@@ -1,6 +1,6 @@
 use yew::format::Json;
 use yew::prelude::*;
-use yew::services::fetch::{FetchService, FetchTask, Response, Request};
+use yew::services::fetch::{FetchService, FetchTask, Request, Response};
 
 use yew_router::{agent::RouteRequest, prelude::*};
 
@@ -35,12 +35,12 @@ impl Component for SignupPage {
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         let router = RouteAgent::bridge(link.callback(|_| Msg::NoOp));
 
-        SignupPage { 
+        SignupPage {
             state: Default::default(),
             link,
             task: None,
             router,
-            message: html!{},
+            message: html! {},
         }
     }
 
@@ -90,7 +90,7 @@ impl Component for SignupPage {
                     user: SignupData,
                 }
                 let body = RequestFormat {
-                    user: self.state.clone()
+                    user: self.state.clone(),
                 };
 
                 let request = Request::post(url)
@@ -98,24 +98,31 @@ impl Component for SignupPage {
                     .body(Json(&body))
                     .expect("Failed to build request");
 
-                self.task = Some(FetchService::fetch(request, self.link.callback(move |response: Response<Result<String, anyhow::Error>>| {
-                    debug!("Response received from {}", url);
-                    let (meta, result) = response.into_parts();
-                    if meta.status.is_success() {
-                        Msg::SignupSuccess(result.unwrap())
-                    } else {
-                        Msg::SignupFailure(result.unwrap())
-                    }
-                })).expect("Failed to get fetch task"));
-
+                self.task = Some(
+                    FetchService::fetch(
+                        request,
+                        self.link.callback(
+                            move |response: Response<Result<String, anyhow::Error>>| {
+                                debug!("Response received from {}", url);
+                                let (meta, result) = response.into_parts();
+                                if meta.status.is_success() {
+                                    Msg::SignupSuccess(result.unwrap())
+                                } else {
+                                    Msg::SignupFailure(result.unwrap())
+                                }
+                            },
+                        ),
+                    )
+                    .expect("Failed to get fetch task"),
+                );
 
                 true
             }
             Msg::ClearMessage => {
-                self.message = html!{};
+                self.message = html! {};
                 true
             }
-            _ => false
+            _ => false,
         }
     }
 
@@ -129,20 +136,20 @@ impl Component for SignupPage {
                 {self.message.clone()}
                 <label class="label" for="email">{"Email"}</label>
                 <input type="text"
-                       value=self.state.email 
-                       name="email" 
+                       value=self.state.email
+                       name="email"
                        oninput=self.link.callback(|e: InputData| Msg::UpdateEmail(e.value))
                        class="input"
                        />
                 <label class="label" for="password">{"Password"}</label>
                 <input type="password"
-                       value=self.state.password 
-                       name="password" 
+                       value=self.state.password
+                       name="password"
                        oninput=self.link.callback(|e: InputData| Msg::UpdatePassword(e.value))
                        class="input"
                        />
-                <button 
-                    onclick=self.link.callback(|_| Msg::DoSignup) 
+                <button
+                    onclick=self.link.callback(|_| Msg::DoSignup)
                     class="button"
                     >{"Sign up"}</button>
             </>

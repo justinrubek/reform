@@ -9,4 +9,3 @@ pub struct Form {
     pub fields: serde_json::Value,
     pub mappings: serde_json::Value,
 }
-

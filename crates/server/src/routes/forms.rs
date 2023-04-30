@@ -33,9 +33,7 @@ pub fn post_form(
 
     db::forms::create(&conn, &name, &data, &mappings)
         .map(|form| json!(form))
-        .map_err(|error| {
-            Errors::new(&[("json form", "invalid")])
-        })
+        .map_err(|error| Errors::new(&[("json form", "invalid")]))
 }
 
 #[get("/forms/<id>")]
@@ -47,4 +45,3 @@ pub fn get_form(id: i32, conn: db::Conn, state: State<AppState>) -> Option<JsonV
 pub fn get_all_forms(auth: Auth, conn: db::Conn, state: State<AppState>) -> Option<JsonValue> {
     Some(json!(db::forms::find_all(&conn)))
 }
-

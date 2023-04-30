@@ -48,7 +48,6 @@ pub fn build_rocket() -> rocket::Rocket {
                 routes::forms::get_form,
                 routes::forms::post_form,
                 routes::forms::get_all_forms,
-
             ],
         )
         .attach(db::Conn::fairing())
@@ -59,4 +58,3 @@ pub fn build_rocket() -> rocket::Rocket {
 fn cors_fairing() -> Cors {
     Cors::from_options(&Default::default()).expect("Cors fairing failed to be created")
 }
-

@@ -1,4 +1,4 @@
-#![recursion_limit="256"]
+#![recursion_limit = "256"]
 extern crate anyhow;
 
 extern crate chrono;
@@ -31,8 +31,8 @@ use form::Props;
 
 use std::convert::TryInto;
 
-use yew::web_sys::Element;
 use yew::utils::document;
+use yew::web_sys::Element;
 
 use wasm_bindgen::prelude::*;
 
@@ -50,9 +50,11 @@ pub fn inject_forms() -> Result<(), JsValue> {
 
     // Retrieve properties to pass the field
     let form_url = element.get_attribute("data-form").unwrap();
-    let success_message_title = element.get_attribute("data-success-message-title")
+    let success_message_title = element
+        .get_attribute("data-success-message-title")
         .unwrap_or("Submission success!".to_string());
-    let success_message_body = element.get_attribute("data-success-message-body")
+    let success_message_body = element
+        .get_attribute("data-success-message-body")
         .unwrap_or("Thank you for your submission. It has been received.".to_string());
 
     let form_props = form::Props {
@@ -61,6 +63,6 @@ pub fn inject_forms() -> Result<(), JsValue> {
         success_message_body,
     };
     app.mount_with_props(element, form_props);
-    
+
     Ok(())
 }

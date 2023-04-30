@@ -8,7 +8,7 @@ use serde::Deserialize;
 #[derive(Insertable)]
 #[table_name = "forms"]
 pub struct NewForm<'a> {
-    pub name:  &'a str,
+    pub name: &'a str,
     pub fields: &'a serde_json::Value,
     pub mappings: &'a serde_json::Value,
 }
@@ -65,9 +65,7 @@ pub struct UpdateFormData {
 }
 
 pub fn update(conn: &PgConnection, id: i32, data: &UpdateFormData) -> Option<Form> {
-    let data = &UpdateFormData {
-        ..data.clone()
-    };
+    let data = &UpdateFormData { ..data.clone() };
     diesel::update(forms::table.find(id))
         .set(data)
         .get_result(conn)

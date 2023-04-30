@@ -20,7 +20,7 @@ pub struct UserAuth<'a> {
 
 impl User {
     pub fn to_user_auth(&self, secret: &[u8]) -> UserAuth {
-        let exp = Utc::now() + Duration::days(10); 
+        let exp = Utc::now() + Duration::days(10);
         let token = Auth {
             id: self.id,
             exp: exp.timestamp(),

@@ -1,17 +1,17 @@
 use rocket_contrib::databases::diesel;
 
 pub mod entries;
+pub mod forms;
 pub mod schemas;
 pub mod users;
-pub mod forms;
 
 #[database("diesel_postgres_pool")]
 pub struct Conn(diesel::PgConnection);
 
-use diesel::prelude::*;
-use diesel::query_dsl::methods::LoadQuery;
-use diesel::query_builder::*;
 use diesel::pg::Pg;
+use diesel::prelude::*;
+use diesel::query_builder::*;
+use diesel::query_dsl::methods::LoadQuery;
 use diesel::sql_types::BigInt;
 
 pub trait OffsetLimit: Sized {

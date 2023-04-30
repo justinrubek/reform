@@ -29,18 +29,11 @@ impl From<Error> for UserCreationError {
     }
 }
 
-pub fn create(
-    conn: &PgConnection,
-    email: &str,
-    password: &str,
-) -> Result<User, UserCreationError> {
+pub fn create(conn: &PgConnection, email: &str, password: &str) -> Result<User, UserCreationError> {
     // see https://blog.filippo.io/the-scrypt-parameters
     let hash = &scrypt_simple(password, &ScryptParams::new(14, 8, 1)).expect("hash error");
 
-    let new_user = &NewUser {
-        email,
-        hash,
-    };
+    let new_user = &NewUser { email, hash };
 
     diesel::insert_into(users::table)
         .values(new_user)

@@ -1,7 +1,7 @@
 use serde::Serialize;
 
-use crate::schema::entries;
 use crate::models::schema::Schema;
+use crate::schema::entries;
 
 #[derive(Associations, Identifiable, PartialEq, Queryable, Serialize)]
 #[belongs_to(Schema)]
@@ -11,4 +11,3 @@ pub struct Entry {
     pub schema_id: i32,
     pub data: serde_json::Value,
 }
-

@@ -1,6 +1,5 @@
 use yew::prelude::*;
-use yew_router::{prelude::*};
-
+use yew_router::prelude::*;
 
 use crate::app::form::view::ViewForms;
 use crate::app::schema::view::ViewSchemas;
@@ -12,24 +11,18 @@ pub struct DashboardComponent {
     state: State,
 }
 
-struct State {
-}
+struct State {}
 
-pub enum Msg {
-}
+pub enum Msg {}
 
 impl Component for DashboardComponent {
     type Message = Msg;
     type Properties = ();
 
     fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        let state = State { 
-        };
+        let state = State {};
 
-        DashboardComponent {
-            link,
-            state,
-        }
+        DashboardComponent { link, state }
     }
 
     fn update(&mut self, _msg: Self::Message) -> ShouldRender {

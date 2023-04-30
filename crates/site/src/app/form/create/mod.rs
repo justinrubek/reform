@@ -1,17 +1,16 @@
-
 use yew::prelude::*;
-use yew::services::fetch::{FetchService, FetchTask, Response, Request};
+use yew::services::fetch::{FetchService, FetchTask, Request, Response};
 
 use crate::api;
 use crate::error::Error;
-use crate::types::{FormInfo, FormCreateInfo};
+use crate::types::{FormCreateInfo, FormInfo};
 
 mod field;
 use field::{Field, FieldItem};
 
 mod mapping_page;
-use mapping_page::MappingPage;
 use mapping_page::Mapping;
+use mapping_page::MappingPage;
 
 pub struct CreateForm {
     state: State,
@@ -44,12 +43,12 @@ impl Component for CreateForm {
     type Properties = ();
 
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
-        CreateForm { 
+        CreateForm {
             state: Default::default(),
             link,
             api_handler: api::Form::new(),
             task: None,
-            message: html!{},
+            message: html! {},
         }
     }
 
@@ -64,7 +63,7 @@ impl Component for CreateForm {
                 true
             }
             Msg::AddField => {
-                self.state.fields.push(Default::default()); 
+                self.state.fields.push(Default::default());
                 true
             }
             Msg::CreateFormSuccess(form_info) => {
@@ -110,13 +109,19 @@ impl Component for CreateForm {
                     mappings,
                 };
 
-                self.task = Some(self.api_handler.create(form_info, self.link.callback(move |response: Result<FormInfo, Error>| {
-                    if response.is_ok() {
-                        Msg::CreateFormSuccess(response.unwrap())
-                    } else {
-                        Msg::CreateFormFailure(response.err().unwrap())
-                    }
-                })));
+                self.task = Some(
+                    self.api_handler.create(
+                        form_info,
+                        self.link
+                            .callback(move |response: Result<FormInfo, Error>| {
+                                if response.is_ok() {
+                                    Msg::CreateFormSuccess(response.unwrap())
+                                } else {
+                                    Msg::CreateFormFailure(response.err().unwrap())
+                                }
+                            }),
+                    ),
+                );
 
                 true
             }
@@ -125,10 +130,10 @@ impl Component for CreateForm {
                 true
             }
             Msg::ClearMessage => {
-                self.message = html!{};
+                self.message = html! {};
                 true
             }
-            _ => false
+            _ => false,
         }
     }
 
@@ -149,7 +154,7 @@ impl Component for CreateForm {
                 <h1 class="title">{"Form creator"}</h1>
                 <div class="container">
                     <div class="media">
-                        <h2 class="title media-left">{"Fields"}</h2> 
+                        <h2 class="title media-left">{"Fields"}</h2>
                         <label class="label" for="form_name">{"Name"}</label>
                         <input class="input" type="text" name="form_name" value=self.state.name
                         oninput=self.link.callback(|e: InputData| Msg::UpdateName(e.value))
@@ -173,4 +178,3 @@ impl Component for CreateForm {
         }
     }
 }
-

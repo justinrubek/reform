@@ -2,9 +2,7 @@ use serde::Serialize;
 
 use stdweb::traits::IDragEvent;
 
-
 use yew::prelude::*;
-
 
 use crate::components::Select;
 
@@ -49,7 +47,7 @@ struct State {
 pub enum Msg {
     OnChange,
     UpdateName(String),
-    UpdateType(Type), 
+    UpdateType(Type),
     UpdateLabel(String),
     UpdateData(Vec<String>),
     StartDrag(DragStartEvent),
@@ -76,11 +74,7 @@ impl Component for FieldItem {
             field: props.field.clone(),
         };
 
-        FieldItem { 
-            state,
-            link,
-            props,
-        }
+        FieldItem { state, link, props }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
@@ -118,7 +112,7 @@ impl Component for FieldItem {
                 data_transfer.set_data("field-label", &self.state.field.label);
                 true
             }
-            _ => false
+            _ => false,
         }
     }
 
@@ -126,7 +120,7 @@ impl Component for FieldItem {
         if self.props != props {
             self.state.field = props.field.clone();
             self.props = props;
-            true 
+            true
         } else {
             false
         }
@@ -135,22 +129,22 @@ impl Component for FieldItem {
     fn view(&self) -> Html {
         let type_options = vec![Type::Number, Type::Text, Type::Choice];
 
-        let name_field = html!{ 
+        let name_field = html! {
             <input type="text"
-                   value=self.state.field.name 
-                   name="name" 
+                   value=self.state.field.name
+                   name="name"
                    oninput=self.link.callback(|e: InputData| Msg::UpdateName(e.value))
              />
         };
 
-        let type_field = html!{ 
+        let type_field = html! {
             <Select<Type> options=type_options onchange=self.link.callback(|v| Msg::UpdateType(v)) />
         };
 
-        let label_field = html!{ 
+        let label_field = html! {
             <input type="text"
-                   value=self.state.field.label 
-                   name="label" 
+                   value=self.state.field.label
+                   name="label"
                    oninput=self.link.callback(|e: InputData| Msg::UpdateLabel(e.value))
             />
         };
@@ -185,4 +179,3 @@ impl Component for FieldItem {
         }
     }
 }
-

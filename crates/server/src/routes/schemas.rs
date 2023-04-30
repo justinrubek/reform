@@ -8,7 +8,6 @@ use rocket_contrib::json::{Json, JsonValue};
 use serde::Deserialize;
 use validator::Validate;
 
-
 #[derive(Deserialize, Validate)]
 pub struct NewSchema {
     data: Option<serde_json::Value>,
@@ -33,13 +32,16 @@ pub fn post_schema(
 
     db::schemas::create(&conn, &data, &name)
         .map(|schema| json!(schema))
-        .map_err(|error| {
-            Errors::new(&[("json schema", "invalid")])
-        })
+        .map_err(|error| Errors::new(&[("json schema", "invalid")]))
 }
 
 #[get("/schemas/<id>")]
-pub fn get_schema(id: i32, auth: Auth, conn: db::Conn, state: State<AppState>) -> Option<JsonValue> {
+pub fn get_schema(
+    id: i32,
+    auth: Auth,
+    conn: db::Conn,
+    state: State<AppState>,
+) -> Option<JsonValue> {
     db::schemas::find(&conn, id).map(|schema| json!(schema))
 }
 
@@ -49,7 +51,12 @@ pub fn get_all_schemas(auth: Auth, conn: db::Conn, state: State<AppState>) -> Op
 }
 
 #[get("/schemas/<id>/entries")]
-pub fn get_schema_entries(id: i32, auth: Auth, conn: db::Conn, state: State<AppState>) -> Option<JsonValue> {
+pub fn get_schema_entries(
+    id: i32,
+    auth: Auth,
+    conn: db::Conn,
+    state: State<AppState>,
+) -> Option<JsonValue> {
     db::entries::find_by_schema_id(&conn, id).map(|entry| json!(entry))
 }
 

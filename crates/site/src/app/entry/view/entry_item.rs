@@ -1,11 +1,6 @@
-
 use yew::prelude::*;
 
-
-
-
 use crate::types::EntryInfo;
-
 
 /* EntryPage:
  * Actions to faciliate:
@@ -20,24 +15,19 @@ pub struct EntryItem {
     props: Props,
 }
 
-pub enum Msg {
-}
+pub enum Msg {}
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
     pub entry: EntryInfo,
 }
 
-
 impl Component for EntryItem {
     type Message = Msg;
     type Properties = Props;
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        EntryItem { 
-            link,
-            props,
-        }
+        EntryItem { link, props }
     }
 
     fn update(&mut self, _msg: Self::Message) -> ShouldRender {

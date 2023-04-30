@@ -1,15 +1,14 @@
 #![allow(dead_code)]
 
+pub mod entries;
 pub mod forms;
 pub mod schemas;
-pub mod entries;
 
-pub use schemas::Schema;
 pub use entries::Entry;
 pub use forms::Form;
+pub use schemas::Schema;
 
 use crate::error::Error;
-
 
 use dotenv_codegen::dotenv;
 use lazy_static::lazy_static;
@@ -39,7 +38,8 @@ lazy_static! {
 
 /// Store token in local storage
 pub fn set_token(token: Option<String>) {
-    let mut storage = StorageService::new(Area::Local).expect("Failed to get access to local storage");
+    let mut storage =
+        StorageService::new(Area::Local).expect("Failed to get access to local storage");
     if let Some(t) = token.clone() {
         storage.store(TOKEN_KEY, Ok(t));
     } else {
@@ -62,13 +62,11 @@ pub fn is_authenticated() -> bool {
 
 /// Http request
 #[derive(Default, Debug)]
-struct Requests {
-}
+struct Requests {}
 
 impl Requests {
     fn new() -> Self {
-        Self {
-        }
+        Self {}
     }
 
     /// build common http request
@@ -168,4 +166,3 @@ fn limit(count: u32, page: u32) -> String {
     let offset = if page > 0 { page * count } else { 0 };
     format!("limit={}&offset={}", count, offset)
 }
-

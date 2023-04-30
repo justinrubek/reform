@@ -8,4 +8,3 @@ pub struct Schema {
     pub data: serde_json::Value,
     pub name: String,
 }
-

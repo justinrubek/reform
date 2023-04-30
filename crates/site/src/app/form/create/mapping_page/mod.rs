@@ -1,9 +1,4 @@
-
 use yew::prelude::*;
-
-
-
-
 
 mod mapping;
 pub use mapping::{Mapping, MappingItem};
@@ -30,13 +25,12 @@ pub struct Props {
     pub onchange: Callback<Vec<Mapping>>,
 }
 
-
 impl Component for MappingPage {
     type Message = Msg;
     type Properties = Props;
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        MappingPage { 
+        MappingPage {
             state: Default::default(),
             link,
             props,
@@ -64,27 +58,33 @@ impl Component for MappingPage {
                 true
             }
             Msg::AddMapping => {
-                self.state.mappings.push(Default::default()); 
+                self.state.mappings.push(Default::default());
                 self.link.send_message(Msg::OnChange);
                 true
             }
-            _ => false
+            _ => false,
         }
     }
 
     fn view(&self) -> Html {
-        let mappings = self.state.mappings.iter().enumerate().map(|(i, mapping)| {
-            html! {
-                <MappingItem mapping=mapping onchange=&self.link.callback(move |mapping| {
-                    Msg::UpdateMapping(i, mapping)
-                }) />
-            }
-        }).collect::<Html>();
+        let mappings = self
+            .state
+            .mappings
+            .iter()
+            .enumerate()
+            .map(|(i, mapping)| {
+                html! {
+                    <MappingItem mapping=mapping onchange=&self.link.callback(move |mapping| {
+                        Msg::UpdateMapping(i, mapping)
+                    }) />
+                }
+            })
+            .collect::<Html>();
 
         html! {
             <div class="column">
                 <div class="media">
-                    <h2 class="title media-left">{"Mappings"}</h2> 
+                    <h2 class="title media-left">{"Mappings"}</h2>
                     <button class="button media-right" onclick=self.link.callback(|_| Msg::AddMapping)>{"add mapping"}</button>
                 </div>
                 {mappings}
@@ -92,4 +92,3 @@ impl Component for MappingPage {
         }
     }
 }
-

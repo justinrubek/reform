@@ -1,8 +1,4 @@
-
 use yew::prelude::*;
-
-
-
 
 use crate::types::FormInfo;
 
@@ -12,31 +8,23 @@ pub struct FormItem {
     props: Props,
 }
 
-struct State {
-}
+struct State {}
 
-pub enum Msg {
-}
+pub enum Msg {}
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
     pub form: FormInfo,
 }
 
-
 impl Component for FormItem {
     type Message = Msg;
     type Properties = Props;
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        let state = State {
-        };
+        let state = State {};
 
-        FormItem { 
-            state,
-            link,
-            props,
-        }
+        FormItem { state, link, props }
     }
 
     fn update(&mut self, _msg: Self::Message) -> ShouldRender {

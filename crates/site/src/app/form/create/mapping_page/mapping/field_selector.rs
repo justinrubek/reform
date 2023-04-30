@@ -1,11 +1,6 @@
-
-
-use stdweb::traits::{IEvent, IDragEvent};
-
+use stdweb::traits::{IDragEvent, IEvent};
 
 use yew::prelude::*;
-
-
 
 // Allow for text->string and choice->string
 fn check_compatible_types(from: &str, to: &str) -> bool {
@@ -29,7 +24,7 @@ fn check_compatible_types(from: &str, to: &str) -> bool {
 struct State {
     name: String,
     ftype: String,
-    selected_field: Option<String>
+    selected_field: Option<String>,
 }
 
 pub enum Msg {
@@ -63,23 +58,21 @@ impl Component for FieldSelector {
             selected_field: None,
         };
 
-        FieldSelector { 
-            state,
-            link,
-            props
-        }
+        FieldSelector { state, link, props }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::OnChange => {
                 if let Some(selected) = &self.state.selected_field {
-                    self.props.onchange.emit((selected.clone(), self.state.name.clone()));
+                    self.props
+                        .onchange
+                        .emit((selected.clone(), self.state.name.clone()));
                 } else {
                     // FIXME: We currently don't support clearing the contents of a field
                     panic!("Attempted to update mapping without selecting an item");
                 }
-                
+
                 true
             }
             Msg::OnDrop(event) => {
@@ -112,7 +105,7 @@ impl Component for FieldSelector {
                 }
                 false
             }
-            _ => false
+            _ => false,
         }
     }
 
@@ -128,7 +121,7 @@ impl Component for FieldSelector {
     fn view(&self) -> Html {
         let field_value = match &self.state.selected_field {
             Some(name) => name.clone(),
-            None => "".to_string()
+            None => "".to_string(),
         };
 
         html! {
@@ -136,8 +129,8 @@ impl Component for FieldSelector {
                 <td>{&self.state.name}</td>
                 <td>{&self.state.ftype}</td>
                 <td>
-                    <input 
-                        type="text" 
+                    <input
+                        type="text"
                         value=field_value
                         onchange=self.link.callback(|_| Msg::Nop)
                         ondrop=self.link.callback(|event| Msg::OnDrop(event))

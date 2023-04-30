@@ -4,13 +4,13 @@ use crate::db::{self};
 use crate::errors::{Errors, FieldValidator};
 
 use core::ops::Deref;
-use std::convert::{From, Into};
 use rocket::State;
 use rocket_contrib::json::{Json, JsonValue};
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use validator::Validate;
+use std::convert::{From, Into};
 use valico::json_schema;
+use validator::Validate;
 
 #[derive(Deserialize, Validate, Serialize)]
 pub struct NewEntry {
@@ -34,7 +34,9 @@ pub fn post_entries(
 
     // Validate against schema
     // First, prepare the schema into the jsl format
-    let schema = db::schemas::find(&conn, schema_id).ok_or(Errors::new(&[("schema_id", "invalid")]))?.data;
+    let schema = db::schemas::find(&conn, schema_id)
+        .ok_or(Errors::new(&[("schema_id", "invalid")]))?
+        .data;
 
     let mut scope = json_schema::Scope::new();
     let schema_validator = scope.compile_and_return(schema.clone(), false).unwrap();
@@ -48,9 +50,7 @@ pub fn post_entries(
 
     db::entries::create(&conn, &schema_id, &data)
         .map(|entry| json!(entry))
-        .map_err(|error| {
-            Errors::new(&[("json entry", "invalid")])
-        })
+        .map_err(|error| Errors::new(&[("json entry", "invalid")]))
 }
 
 #[get("/entry/<id>")]

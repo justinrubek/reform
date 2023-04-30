@@ -1,14 +1,12 @@
 use std::collections::HashMap;
 
-
 use yew::prelude::*;
-use yew::services::fetch::{FetchService, FetchTask, Response, Request};
+use yew::services::fetch::{FetchService, FetchTask, Request, Response};
 
 use crate::api;
 use crate::api::Schema;
 use crate::error::Error;
 use crate::types::{SchemaCreateInfo, SchemaInfo};
-
 
 mod field;
 use field::{Field, FieldItem, Type};
@@ -42,12 +40,12 @@ impl Component for CreateSchema {
     type Properties = ();
 
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
-        CreateSchema { 
+        CreateSchema {
             state: Default::default(),
             link,
             api_handler: api::Schema::new(),
             task: None,
-            message: html!{},
+            message: html! {},
         }
     }
 
@@ -62,7 +60,7 @@ impl Component for CreateSchema {
                 true
             }
             Msg::AddField => {
-                self.state.fields.push(Default::default()); 
+                self.state.fields.push(Default::default());
                 true
             }
             Msg::CreateSchemaSuccess(schema_info) => {
@@ -101,7 +99,12 @@ impl Component for CreateSchema {
                 // Turn this schema into JSON value
                 // required - what fields belong on the document
                 // let required = format!("{:?}", self.state.fields.iter().map(|field| field.name.clone()).collect::<Vec<String>>());
-                let required_fields = self.state.fields.iter().map(|field| json!(field.name)).collect::<Vec<serde_json::Value>>();
+                let required_fields = self
+                    .state
+                    .fields
+                    .iter()
+                    .map(|field| json!(field.name))
+                    .collect::<Vec<serde_json::Value>>();
                 let required = serde_json::Value::Array(required_fields);
 
                 fn type_to_string(ty: Type) -> &'static str {
@@ -114,8 +117,12 @@ impl Component for CreateSchema {
                 // properties - describe the properties of the fields
                 let mut properties: HashMap<String, serde_json::Value> = HashMap::new();
                 for field in &self.state.fields {
-                    let mut props: serde_json::Map<String, serde_json::Value> = serde_json::Map::new();
-                    props.insert("type".to_string(), json!(type_to_string(field.ftype).to_string()));
+                    let mut props: serde_json::Map<String, serde_json::Value> =
+                        serde_json::Map::new();
+                    props.insert(
+                        "type".to_string(),
+                        json!(type_to_string(field.ftype).to_string()),
+                    );
 
                     properties.insert(field.name.clone(), serde_json::Value::Object(props));
                 }
@@ -131,22 +138,28 @@ impl Component for CreateSchema {
                     name: self.state.name.clone(),
                 };
 
-                self.task = Some(self.api_handler.create(schema_info, self.link.callback(move |response: Result<SchemaInfo, Error>| {
-                    debug!("Response received for CreateSchema");
-                    if response.is_ok() {
-                        Msg::CreateSchemaSuccess(response.unwrap())
-                    } else {
-                        Msg::CreateSchemaFailure(response.err().unwrap())
-                    }
-                })));
+                self.task = Some(
+                    self.api_handler.create(
+                        schema_info,
+                        self.link
+                            .callback(move |response: Result<SchemaInfo, Error>| {
+                                debug!("Response received for CreateSchema");
+                                if response.is_ok() {
+                                    Msg::CreateSchemaSuccess(response.unwrap())
+                                } else {
+                                    Msg::CreateSchemaFailure(response.err().unwrap())
+                                }
+                            }),
+                    ),
+                );
 
                 true
             }
             Msg::ClearMessage => {
-                self.message = html!{};
+                self.message = html! {};
                 true
             }
-            _ => false
+            _ => false,
         }
     }
 
@@ -155,13 +168,19 @@ impl Component for CreateSchema {
     }
 
     fn view(&self) -> Html {
-        let fields = self.state.fields.iter().enumerate().map(|(i, field)| {
-            html! {
-                <FieldItem field=field onchange=&self.link.callback(move |field| {
-                    Msg::UpdateField(i, field)
-                }) />
-            }
-        }).collect::<Html>();
+        let fields = self
+            .state
+            .fields
+            .iter()
+            .enumerate()
+            .map(|(i, field)| {
+                html! {
+                    <FieldItem field=field onchange=&self.link.callback(move |field| {
+                        Msg::UpdateField(i, field)
+                    }) />
+                }
+            })
+            .collect::<Html>();
 
         html! {
             <>
@@ -173,7 +192,7 @@ impl Component for CreateSchema {
                         oninput=self.link.callback(|e: InputData| Msg::UpdateName(e.value))
                     />
                     <div class="media">
-                        <h2 class="title media-left">{"Fields"}</h2> 
+                        <h2 class="title media-left">{"Fields"}</h2>
                         <button class="button media-right" onclick=self.link.callback(|_| Msg::AddField)>{"add field"}</button>
                     </div>
                     <table class="table">
@@ -191,4 +210,3 @@ impl Component for CreateSchema {
         }
     }
 }
-

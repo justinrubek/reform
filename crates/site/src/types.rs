@@ -1,8 +1,6 @@
 use std::collections::HashMap;
 
-
 use serde::{Deserialize, Serialize};
-
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct SchemaInfo {
@@ -71,4 +69,3 @@ pub struct FormList {
 }
 
 pub type DeleteWrapper = HashMap<(), ()>;
-

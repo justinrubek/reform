@@ -1,7 +1,5 @@
 use yew::prelude::*;
-use yew_router::{prelude::*};
-
-
+use yew_router::prelude::*;
 
 use super::AppRoute;
 
@@ -10,8 +8,7 @@ pub struct IndexComponent {
     state: State,
 }
 
-struct State {
-}
+struct State {}
 
 pub enum Msg {
     ChangeRoute(AppRoute),
@@ -22,13 +19,9 @@ impl Component for IndexComponent {
     type Properties = ();
 
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
-        let state = State { 
-        };
+        let state = State {};
 
-        IndexComponent {
-            link,
-            state,
-        }
+        IndexComponent { link, state }
     }
 
     fn update(&mut self, _msg: Self::Message) -> ShouldRender {

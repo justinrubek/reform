@@ -1,6 +1,5 @@
-
 use yew::prelude::*;
-use yew::services::fetch::{FetchService, FetchTask, Response, Request};
+use yew::services::fetch::{FetchService, FetchTask, Request, Response};
 
 use crate::api;
 use crate::error::Error;
@@ -39,14 +38,15 @@ impl Component for ViewEntries {
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         // Attempt to fetch entries
         let mut fetch = api::Entry::new();
-        let task = fetch.get_by_schema_id(props.schema_id, link.callback(|response: Result<Vec<EntryInfo>, Error>| {
-            match response {
+        let task = fetch.get_by_schema_id(
+            props.schema_id,
+            link.callback(|response: Result<Vec<EntryInfo>, Error>| match response {
                 Ok(list) => Msg::FetchSuccess(list),
                 Err(err) => Msg::FetchFailure(err),
-            }
-        }));
+            }),
+        );
 
-        ViewEntries { 
+        ViewEntries {
             state: Default::default(),
             fetch,
             link,
@@ -67,7 +67,7 @@ impl Component for ViewEntries {
                 // TODO: Respond to this
                 true
             }
-            _ => false
+            _ => false,
         }
     }
 
@@ -93,4 +93,3 @@ impl Component for ViewEntries {
         }
     }
 }
-

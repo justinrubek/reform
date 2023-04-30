@@ -34,7 +34,7 @@ impl Component for ChoiceField {
             choices: Vec::new(),
         };
 
-        ChoiceField { 
+        ChoiceField {
             state: state,
             link,
             onchange: props.onchange,
@@ -62,7 +62,7 @@ impl Component for ChoiceField {
                 self.link.send_message(Msg::OnChange);
                 true
             }
-            _ => false
+            _ => false,
         }
     }
 
@@ -88,4 +88,3 @@ impl Component for ChoiceField {
         }
     }
 }
-

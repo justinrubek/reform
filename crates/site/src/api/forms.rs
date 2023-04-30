@@ -1,11 +1,10 @@
-use super::{Requests};
+use super::Requests;
 use crate::error::Error;
 use crate::types::*;
 
 use yew::callback::Callback;
 
 use yew::services::fetch::{FetchService, FetchTask, Request, Response};
-
 
 #[derive(Default, Debug)]
 pub struct Form {
@@ -21,27 +20,14 @@ impl Form {
         }
     }
 
-    pub fn get(
-        &mut self,
-        id: u32,
-        callback: Callback<Result<FormInfo, Error>>,
-    ) -> FetchTask {
+    pub fn get(&mut self, id: u32, callback: Callback<Result<FormInfo, Error>>) -> FetchTask {
         self.requests
-            .get::<FormInfo>(
-                format!("/{}/{}", API_KEY, id), 
-                callback
-            )
+            .get::<FormInfo>(format!("/{}/{}", API_KEY, id), callback)
     }
 
-    pub fn get_all(
-        &mut self,
-        callback: Callback<Result<Vec<FormInfo>, Error>>,
-    ) -> FetchTask {
+    pub fn get_all(&mut self, callback: Callback<Result<Vec<FormInfo>, Error>>) -> FetchTask {
         self.requests
-            .get::<Vec<FormInfo>>(
-                format!("/{}", API_KEY), 
-                callback
-            )
+            .get::<Vec<FormInfo>>(format!("/{}", API_KEY), callback)
     }
 
     pub fn create(
@@ -50,10 +36,6 @@ impl Form {
         callback: Callback<Result<FormInfo, Error>>,
     ) -> FetchTask {
         self.requests
-            .post::<FormCreateInfo, FormInfo>(
-                format!("/{}", API_KEY),
-                form,
-                callback,
-            )
+            .post::<FormCreateInfo, FormInfo>(format!("/{}", API_KEY), form, callback)
     }
 }

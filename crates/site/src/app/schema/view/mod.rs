@@ -1,6 +1,5 @@
-
 use yew::prelude::*;
-use yew::services::fetch::{FetchService, FetchTask, Response, Request};
+use yew::services::fetch::{FetchService, FetchTask, Request, Response};
 
 use crate::api;
 use crate::error::Error;
@@ -35,14 +34,15 @@ impl Component for ViewSchemas {
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         // Attempt to fetch schemas
         let mut fetch = api::Schema::new();
-        let task = fetch.get_all(link.callback(|response: Result<Vec<SchemaInfo>, Error>| {
-            match response {
-                Ok(list) => Msg::FetchSuccess(list),
-                Err(err) => Msg::FetchFailure(err),
-            }
-        }));
+        let task =
+            fetch.get_all(link.callback(
+                |response: Result<Vec<SchemaInfo>, Error>| match response {
+                    Ok(list) => Msg::FetchSuccess(list),
+                    Err(err) => Msg::FetchFailure(err),
+                },
+            ));
 
-        ViewSchemas { 
+        ViewSchemas {
             state: Default::default(),
             fetch,
             link,
@@ -65,7 +65,7 @@ impl Component for ViewSchemas {
                 error!("error: {}", error);
                 true
             }
-            _ => false
+            _ => false,
         }
     }
 
@@ -86,4 +86,3 @@ impl Component for ViewSchemas {
         }
     }
 }
-

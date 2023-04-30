@@ -2,7 +2,7 @@ use yew::callback::Callback;
 use yew::html::{ChangeData, Component, ComponentLink, Html, ShouldRender};
 use yew::macros::{html, Properties};
 
-/// `Select` component. 
+/// `Select` component.
 /// Taken and modified from yew v0.11.0 at https://github.com/yewstack/yew/blob/v0.11.0/src/components/select.rs
 /// The update to date version of this provided by yew is in the crate yew-components which
 /// requires web-sys. One day this site may support that, but currently it does not

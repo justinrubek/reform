@@ -1,4 +1,4 @@
-#![recursion_limit="256"]
+#![recursion_limit = "256"]
 
 extern crate anyhow;
 
@@ -33,9 +33,9 @@ extern crate stdweb;
 extern crate web_logger;
 
 pub mod api;
+mod app;
 pub mod error;
 pub mod types;
-mod app;
 
 mod components;
 
@@ -45,7 +45,7 @@ use wasm_bindgen::prelude::*;
 pub fn run_app() -> Result<(), JsValue> {
     web_logger::init();
     info!("Yew app startup");
-    
+
     yew::start_app::<app::App>();
 
     Ok(())

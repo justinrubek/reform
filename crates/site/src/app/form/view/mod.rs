@@ -1,10 +1,9 @@
-
 use yew::prelude::*;
-use yew::services::fetch::{FetchService, FetchTask, Response, Request};
+use yew::services::fetch::{FetchService, FetchTask, Request, Response};
 
 use crate::api;
 use crate::error::Error;
-use crate::types::{FormInfo};
+use crate::types::FormInfo;
 
 mod form_item;
 use form_item::FormItem;
@@ -26,7 +25,6 @@ pub enum Msg {
     FetchFailure(Error),
 }
 
-
 impl Component for ViewForms {
     type Message = Msg;
     type Properties = ();
@@ -34,14 +32,15 @@ impl Component for ViewForms {
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         // Attempt to fetch forms
         let mut fetch = api::Form::new();
-        let task = fetch.get_all(link.callback(|response: Result<Vec<FormInfo>, Error>| {
-            match response {
-                Ok(list) => Msg::FetchSuccess(list),
-                Err(err) => Msg::FetchFailure(err),
-            }
-        }));
+        let task =
+            fetch.get_all(
+                link.callback(|response: Result<Vec<FormInfo>, Error>| match response {
+                    Ok(list) => Msg::FetchSuccess(list),
+                    Err(err) => Msg::FetchFailure(err),
+                }),
+            );
 
-        ViewForms { 
+        ViewForms {
             state: Default::default(),
             fetch,
             link,
@@ -64,7 +63,7 @@ impl Component for ViewForms {
                 error!("error: {}", error);
                 true
             }
-            _ => false
+            _ => false,
         }
     }
 
@@ -85,4 +84,3 @@ impl Component for ViewForms {
         }
     }
 }
-

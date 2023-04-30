@@ -1,5 +1,5 @@
-use rocket::fairing::AdHoc;
 use rocket::config::{Config, Environment, Value};
+use rocket::fairing::AdHoc;
 use std::collections::HashMap;
 use std::env;
 
@@ -28,11 +28,12 @@ impl AppState {
                 }
             });
 
-            Ok(rocket.manage(AppState{secret: secret.into_bytes()}))
+            Ok(rocket.manage(AppState {
+                secret: secret.into_bytes(),
+            }))
         })
     }
 }
-
 
 /// Create rocket config from environment variables
 pub fn from_env() -> Config {

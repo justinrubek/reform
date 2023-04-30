@@ -27,10 +27,7 @@ pub fn create(
     schema_id: &i32,
     data: &serde_json::Value,
 ) -> Result<Entry, EntryCreationError> {
-    let new_entry = &NewEntry {
-        schema_id,
-        data,
-    };
+    let new_entry = &NewEntry { schema_id, data };
 
     // TODO: Query the schema and ensure the provided JSON is valid
 
@@ -51,10 +48,8 @@ pub fn find(conn: &PgConnection, id: i32) -> Option<Entry> {
 pub fn find_by_schema_id(conn: &PgConnection, id: i32) -> Option<Vec<Entry>> {
     // Get the schema we're querying for
     match crate::db::schemas::find(conn, id) {
-        Some(schema) => {
-            Entry::belonging_to(&schema).load(conn).ok()
-        }
-        _ => None
+        Some(schema) => Entry::belonging_to(&schema).load(conn).ok(),
+        _ => None,
     }
 }
 
@@ -66,9 +61,7 @@ pub struct UpdateEntryData {
 }
 
 pub fn update(conn: &PgConnection, id: i32, data: &UpdateEntryData) -> Option<Entry> {
-    let data = &UpdateEntryData {
-        ..data.clone()
-    };
+    let data = &UpdateEntryData { ..data.clone() };
     diesel::update(entries::table.find(id))
         .set(data)
         .get_result(conn)
