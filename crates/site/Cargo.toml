@@ -39,3 +39,6 @@ features = ["std_web"]
 version = "0.14"
 default-features = false
 features = ["std_web", "router", "service", "components"]
+
+[patch.crates-io]
+lexical-core = {git = 'https://github.com/Gelbpunkt/rust-lexical', branch = 'fix-warnings-and-update-deps'}

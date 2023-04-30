@@ -22,7 +22,6 @@
       pkgs.bacon
       # version control
       pkgs.cocogitto
-      inputs'.bomper.packages.cli
     ];
 
     # packages required for building the rust packages
