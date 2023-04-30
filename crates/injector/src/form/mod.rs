@@ -75,18 +75,25 @@ impl Component for Form {
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         // Initiate request to retrieve form
-        let request = Request::get(props.form_url.clone()).body(Nothing).expect("Failed to build request for form");
-        let task = FetchService::fetch(request, link.callback(|response: Response<Result<String, anyhow::Error>>| {
-            if response.status().is_success() {
-                let body = response.body().as_ref().unwrap();
-                let form_info: FormInfo = serde_json::from_str(&body).expect("failed to deserialize form");
-                Msg::GetFormSuccess(form_info)
-            } else {
-                Msg::GetFormFailure(format!("{}", response.body().as_ref().err().unwrap()))
-            }
-        })).expect("Failed to fetch schema");
+        let request = Request::get(props.form_url.clone())
+            .body(Nothing)
+            .expect("Failed to build request for form");
+        let task = FetchService::fetch(
+            request,
+            link.callback(|response: Response<Result<String, anyhow::Error>>| {
+                if response.status().is_success() {
+                    let body = response.body().as_ref().unwrap();
+                    let form_info: FormInfo =
+                        serde_json::from_str(&body).expect("failed to deserialize form");
+                    Msg::GetFormSuccess(form_info)
+                } else {
+                    Msg::GetFormFailure(format!("{}", response.body().as_ref().err().unwrap()))
+                }
+            }),
+        )
+        .expect("Failed to fetch schema");
 
-        let state = State { 
+        let state = State {
             form: None,
             field_data: Vec::new(),
         };
@@ -97,7 +104,7 @@ impl Component for Form {
             task: Some(task),
             submit_tasks: Vec::new(),
             submit_completion: Vec::new(),
-            message: html!{},
+            message: html! {},
             props,
         }
     }
@@ -123,7 +130,7 @@ impl Component for Form {
 
                 self.state.form = Some(form_info);
                 self.state.field_data = field_data;
-                
+
                 info!("form get success");
                 true
             }
@@ -148,7 +155,7 @@ impl Component for Form {
                 #[derive(Clone, PartialEq, Serialize)]
                 struct Entry {
                     schema_id: i32,
-                    data: serde_json::Value
+                    data: serde_json::Value,
                 }
 
                 let mappings = self.state.form.clone().unwrap().mappings.clone();
@@ -164,7 +171,6 @@ impl Component for Form {
                                 if data.name.eq(from) {
                                     val = data.data.clone();
                                 }
-
                             }
                             val
                         };
@@ -181,16 +187,26 @@ impl Component for Form {
 
                     let request = Request::post("/api/entries")
                         .header("Content-Type", "application/json")
-                        .body(Json(&body)).expect("Failed to build request for form submission");
-                    let task = FetchService::fetch(request, self.link.callback(move |response: Response<Result<String, anyhow::Error>>| {
-                        if response.status().is_success() {
-                            info!("Success!");
-                            Msg::SubmitSuccess(i)
-                        } else {
-                            info!("Failure!");
-                            Msg::SubmitFailure(format!("{}", response.body().as_ref().err().unwrap()))
-                        }
-                    })).expect("Failed to send entry request");
+                        .body(Json(&body))
+                        .expect("Failed to build request for form submission");
+                    let task = FetchService::fetch(
+                        request,
+                        self.link.callback(
+                            move |response: Response<Result<String, anyhow::Error>>| {
+                                if response.status().is_success() {
+                                    info!("Success!");
+                                    Msg::SubmitSuccess(i)
+                                } else {
+                                    info!("Failure!");
+                                    Msg::SubmitFailure(format!(
+                                        "{}",
+                                        response.body().as_ref().err().unwrap()
+                                    ))
+                                }
+                            },
+                        ),
+                    )
+                    .expect("Failed to send entry request");
 
                     self.submit_tasks.push(task);
                     self.submit_completion.push(false);
@@ -235,10 +251,10 @@ impl Component for Form {
                 true
             }
             Msg::ClearMessage => {
-                self.message = html!{};
+                self.message = html! {};
                 true
             }
-            _ => true
+            _ => true,
         }
     }
 
@@ -257,7 +273,7 @@ impl Component for Form {
                 form.fields.iter().enumerate().map(|(i, field)| {
                     let onchange = self.link.callback(move |data| Msg::UpdateField(i, data));
                     html! {
-                        <Field field=field onchange=onchange value=self.state.field_data[i].data.clone() />
+                        <Field field=field.clone() onchange=onchange value=self.state.field_data[i].data.clone() />
                     }
                 }).collect::<Html>()
             }
@@ -270,7 +286,7 @@ impl Component for Form {
                     <button class="button" onclick=self.link.callback(|_| Msg::Submit)>{"Submit"}</button>
                 }
             }
-            None => html!{}
+            None => html! {},
         };
 
         html! {

@@ -14,9 +14,7 @@ pub enum Type {
     Choice,
 }
 
-pub enum FieldValue {
-
-}
+pub enum FieldValue {}
 
 #[derive(Clone, PartialEq, Deserialize)]
 pub struct FormField {
@@ -56,7 +54,7 @@ impl Component for Field {
     type Properties = Props;
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        let state = State { 
+        let state = State {
             field: props.field.clone(),
             value: props.value.clone(),
         };
@@ -76,9 +74,7 @@ impl Component for Field {
                 self.onchange.emit(data);
                 true
             }
-            Msg::InvalidInput => {
-                true
-            }
+            Msg::InvalidInput => true,
             _ => true,
         }
     }
@@ -101,26 +97,29 @@ impl Component for Field {
                     match event.value.parse::<isize>() {
                         Ok(integer) => Msg::UpdateField(json!(integer)),
                         _ => match event.value.parse::<f64>() {
-                            Ok(float) => {
-                                Msg::UpdateField(json!(float))
-                            }
-                            _ => Msg::InvalidInput
-                        }
+                            Ok(float) => Msg::UpdateField(json!(float)),
+                            _ => Msg::InvalidInput,
+                        },
                     }
                 });
 
+                let value_str = self.state.value.to_string();
+
                 html! {
-                    <input 
-                        type="number" 
-                        name=self.state.field.name
+                    <input
+                        type="number"
+                        name=self.state.field.name.clone()
                         oninput=callback
-                        value=self.state.value />
+                        value=value_str
+                    />
                 }
             }
             Type::Text => {
                 if let serde_json::Value::String(value) = &self.state.value {
-                    html!{
-                        <input type="text" name=self.state.field.name 
+                    html! {
+                        <input
+                            type="text"
+                            name=self.state.field.name.clone()
                             onchange=self.link.callback(|event: Event| {
                                 if let ChangeData::Value(val) = event {
                                     Msg::UpdateField(json!(val))
@@ -128,7 +127,7 @@ impl Component for Field {
                                     panic!("Onchange value not a string");
                                 }
                             })
-                            value=self.state.value.as_str().expect("No string value for text")
+                            value=self.state.value.to_string()
                             class="input"/>
                     }
                 } else {
@@ -138,15 +137,15 @@ impl Component for Field {
             Type::Choice => {
                 let options = self.state.field.data.as_ref().unwrap();
 
-                html!{
-                    <Select<String> options=options on_change=self.link.callback(|v| Msg::UpdateField(json!(v))) />
+                html! {
+                    <Select<String> options=options.clone() on_change=self.link.callback(|v| Msg::UpdateField(json!(v))) />
                 }
             }
         };
 
         html! {
             <div>
-                <label class="label" for=self.state.field.name>{&self.state.field.label}</label>
+                <label class="label" for=self.state.field.name.clone()>{&self.state.field.label}</label>
                 {input_field}
             </div>
         }
